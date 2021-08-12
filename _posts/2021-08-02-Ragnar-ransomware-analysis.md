@@ -70,5 +70,15 @@ This unique hash value is later used for creating a new event (by name) on the s
 
 ![deb6dfbbea7540a5a8832a52e3bcff6e](https://user-images.githubusercontent.com/70239991/127954744-4ef39e60-9d93-460c-b67b-e29c6850a51d.png)
 
-
 ![96effe7caa354950ae4936c31df1ef51](https://user-images.githubusercontent.com/70239991/127954735-8ddb3088-1ac4-4437-afa7-231d34692e72.png)
+
+The malware continues multiple embedded encrypted strings in the form of a configuration datafile which at runtime decode using the decryption_routine1 function.
+
+The first three occurrences of data decryption result in three parts of the configuration:
+
+1.  A unique victim ID used for communicating with the actors when setting up a TOR based communication session on the Ragnar actor's website
+2.  A list of processes by name
+3.  A list of services by name
+
+![ed2f0bcb6977478f808bfa7a779cd9ff](https://user-images.githubusercontent.com/54753063/129132433-cea0937b-92d4-4a88-a06d-03d646778fdc.png)
+![99266b1f94c34e1db4a923426596ee05](https://user-images.githubusercontent.com/54753063/129132449-d583faa1-e0bc-40f3-8c9d-79c6e9f3ca63.png)
