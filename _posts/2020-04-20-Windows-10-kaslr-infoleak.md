@@ -78,7 +78,7 @@ Warning! - in 1607 there have been a few new mitigations, patches, and informati
 
 ----
 
-#### DesktopHeap (TEB.Win32ClientInfo) information leakage
+### DesktopHeap (TEB.Win32ClientInfo) information leakage
 
 To aid in the bypass of KASLR, you will need a to combine an information leakage bug with your exploit in order to obtain kernel addresses so you can locate other various structures (example: turning an arbitrary write into a classic WWW)
 
