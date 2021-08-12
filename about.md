@@ -1,7 +1,12 @@
 ---
-title: "About"
-layout: page
+layout: single
+author_profile: true
+title: Post Categories
+header:
+  overlay_image: blog-cover.jpg
+permalink: /about.html
 ---
+
 
 **Technical expertise:**
 
