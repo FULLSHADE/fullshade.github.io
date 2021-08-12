@@ -1,7 +1,7 @@
 # Site Settings
 locale                   : "ru-RU"
 title_separator          : "-"
-title                    : "Blog"
+title                    : "Security Research | Blog "
 url                      : "https://fullshade.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "FULLSHADE/FULLSHADE.github.io"
