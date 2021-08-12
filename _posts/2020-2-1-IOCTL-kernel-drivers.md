@@ -1,6 +1,6 @@
 ---
 layout: single
-title: IOCTL's for kernel driver exploit development - driver IOCTL dissection and discovery 
+title: IOCTL’s for Kernel Driver Exploit Development - Driver IOCTL Dissection and Discovery
 ---
 
 An introduction to IOCTLS's and utilizing and discovering them while conducting Windows kernel exploit development.
