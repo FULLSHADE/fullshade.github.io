@@ -1,9 +1,6 @@
 ---
 title: RagnarLocker Ransomware Malware Analysis Report
 date: 2021-08-02
-categories: [Malware, analysis]
-tags: [malware analysis]
-toc: true
 ---
 
 # Introduction
