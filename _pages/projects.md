@@ -17,7 +17,7 @@ Jektor is a shellcode injection/execution tool that demonstrates various tehcniq
 
 
 ## HonestGuard
-HonestGuard is a proof-of-concept infostealer designed to gather system information about a target system and exfiltrate it back to a C2 server
+HonestGuard is a proof-of-concept infostealer designed to gather system information about a target system and exfiltrate it back to a C2 server in an encrypted manner
 - Link: https://github.com/xxxxxxxxxx/HonestGuard
 
 
