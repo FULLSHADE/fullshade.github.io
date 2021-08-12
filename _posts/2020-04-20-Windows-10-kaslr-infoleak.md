@@ -24,7 +24,7 @@ This post will only be covering one leak per Windows version, as there are many 
 
 The year is 2020, but let's take a quick journey back to 2016 when Microsoft released the `Creators Update` aka, Windows 1607. This post covers a few different techniques to leak kernel addresses on a Windows 10 (Redstone 1) system using C++ & win32k.sys. This post is also the complement to the Github repository which holds a few information leakage POCs for a few public bugs that I will be covering here.
 
-The final code (POCs) for this can be found here - [https://github.com/FULLSHADE/LEAKYDRIPPER](https://github.com/FULLSHADE/LEAKYDRIPPER)
+The final code (POCs) for this can be found here - [https://github.com/FULLSHADE/LEAKYDRIPPER](https://github.com/FULLSHADE/Win10InfoLeaks)
 
 ----
 
@@ -159,7 +159,7 @@ And now for the finale you can cout them to view the various (now) leaked kernel
     std::cout << "\t[>] Kernel Desktop limit address : " << pvDesktopLimit << std::endl;
 ```
 
-![leaked](https://raw.githubusercontent.com/FULLSHADE/LEAKYDRIPPER/master/images/DesktopHeapLeak.png)
+![leaked](https://raw.githubusercontent.com/FULLSHADE/Win10InfoLeaks/master/images/DesktopHeapLeak.png)
 
 #### Conclusion
 
