@@ -10,5 +10,5 @@ main:
   - title: "Post Categories"
     url: /categories.html
 
-  - title: "About Me"
-    url: /about.html
+  - title: "About"
+    url: /about.md
