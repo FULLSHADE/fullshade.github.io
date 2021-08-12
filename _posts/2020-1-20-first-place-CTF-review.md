@@ -1,6 +1,6 @@
 ---
 layout: single
-title: Winning my first CTF, 1st place in CMD+CTRL CTF
+title: Winning My First CTF, 1st Place In CMD+CTRL CTF
 ---
 
 Over New Years' weekend, I was fortunate enough to compete in the seasonal CMD+Ctrl CTF, the last time I competed in one of their CTF's was in person when I attended Defcon 27.
