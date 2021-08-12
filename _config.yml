@@ -1,5 +1,5 @@
 # Site Settings
-locale                   : "en-US"
+locale                   : "ru-RU"
 title_separator          : "-"
 title                    : "Blog"
 url                      : "https://fullshade.github.io"
@@ -38,55 +38,14 @@ staticman:
 atom_feed:
   path                   : # blank (default) uses feed.xml
 
-# SEO Related
-google_site_verification :
-bing_site_verification   :
-alexa_site_verification  :
-yandex_site_verification :
 
-# Social Sharing
-facebook:
-  username               :
-  app_id                 :
-  publisher              :
 og_image                 : /assets/images/tweet.jpg
-# For specifying social profiles
-# - https://developers.google.com/structured-data/customize/social-profiles
-social:
-  type                   : # Person or Organization (defaults to Person)
-  name                   : # If the user or organization name differs from the site's name
-  links: # An array of links to social media profiles
-
-# Analytics
-analytics:
-  provider               : "google" # false (default), "google", "google-universal", "custom"
-  google:
-
 
 # Site Author
 author:
   name             : "Fu11Shade"
   avatar           : "bio-photo2.jpg"
-  bio              : "Offensive security research | OSCP | Kernel fuzzing | Windows Internals"
-  uri              :
-  bitbucket        :
-  codepen          :
-  dribbble         :
-  flickr           :
-  facebook         :
-  foursquare       :
-  google_plus      :
-  keybase          :
-  instagram        :
-  lastfm           :
-  pinterest        :
-  soundcloud       :
-  stackoverflow    : 
-  steam            :
-  tumblr           :
-  vine             :
-  weibo            :
-  xing             :
+  bio              : "Malware & Vulnerability Research | OSCP | Exploit Development | Windows Internals"
 
 
 # Reading Files
