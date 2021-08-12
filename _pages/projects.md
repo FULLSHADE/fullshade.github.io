@@ -9,11 +9,11 @@ permalink: /projects.html
 
 ## DrvLoader
 DrvLoader is a Windows post-exploitation utility for loading Windows kernel drivers using both undocumented NT API functions (NtLoadDriver/NtUnloadDriver) and via the Service Control Manager (SCM)
-- Link: https://github.com/FULLSHADE/DrvLoader
+- Link: [https://github.com/FULLSHADE/DrvLoader](https://github.com/FULLSHADE/DrvLoader)
 
 ## Jektor
 Jektor is a shellcode injection/execution tool that demonstrates various tehcniques that malware typically utilizes, Jektor supports shellcode execution through CreateThread, CreateRemoteThread, QueueUserAPC, EnumTimeFormatsEx, and CreateFiber. 
-- Link: https://github.com/FULLSHADE/Jektor
+- Link: [https://github.com/FULLSHADE/Jektor](https://github.com/FULLSHADE/Jektor)
 
 
 ## HonestGuard
