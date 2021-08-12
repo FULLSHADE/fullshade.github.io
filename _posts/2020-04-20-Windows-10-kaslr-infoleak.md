@@ -19,6 +19,13 @@ This post will utilize various kernel address leakage vulnerabilities that only 
 This post will only be covering one leak per Windows version, as there are many dozens of different techniques, this post will cover a few favorite leaks.
 
 ----
+### Windows 10 (all/most versions)
+
+- **EnumDeviceDrivers kernel information leakage**
+
+This is the classic and easiest technique for bypassing KASRL using the EnumDeviceDrivers winAPI function to get the base address of ntoskrnl, this technique works on pretty much every Windows version. But it requires at least medium-integrity execution. 
+
+![desktop heap leakage](https://github.com/FULLSHADE/LEAKYDRIPPER/blob/master/images/EnumDeviceDrivers.PNG)
 
 ### Windows 10 1607 kernel information leakage
 
