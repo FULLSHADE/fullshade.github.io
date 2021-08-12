@@ -5,8 +5,6 @@ tags: [security research]
 toc: true
 ---
 
-## Introduction
-
 This post focused on  loading signed Windows kernel drivers onto the system. During the post-exploitation phase of an offensive operation, actors may decide that loading a rootkit onto the system to enhance their capabilities is the correct approach, in order to do so the actor must have the driver loaded into the kernel. This process is typically done through the Windows Service Control Manager (SCM), the SCM maintains installed services and allows for a user to add, remove, and modify services. Adding a rootkit onto the system can be done through the sc.exe utility on Windows which is an interface with the SCM, but using a utility like this will alert EDR/AV systems as they will capture CMD commands being executed and suspicious instances of new services being created  (MITRE T1543.003). An alternative to this is to directly interface with the Windows API using functions such as OpenSCManagerA and CreateServiceA, but like using sc.exe, these function calls are monitored by EDR/AV systems. 
 
 An alternative method for loading drivers (or potentially a rootkit) onto the system is to directly call the undocumented Windows NT function NtLoadDriver, this function can be used to load a signed driver onto the system. NtLoadDriver is exported by Ntdll.dll but it’s not directly documented by Microsoft.
