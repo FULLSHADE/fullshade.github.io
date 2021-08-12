@@ -170,10 +170,3 @@ We can use the user-mode mapped DesktopHeap combined with a few undocumented asp
 - [2] [https://www.youtube.com/watch?v=PTnuwchEci0](https://www.youtube.com/watch?v=PTnuwchEci0) (The lost video you didn't know existed...)
 - [3] [https://www.youtube.com/watch?v=Gu_5kkErQ6Y](https://www.youtube.com/watch?v=Gu_5kkErQ6Y) (Morten Schenk - Taking Windows 10 Kernel Exploitation to the next level)
 
-----
-
-### Windows 10 1703 kernel information leakage
-
-----
-
-### Windows 10 1809 kernel information leakage
