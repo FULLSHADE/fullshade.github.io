@@ -1,0 +1,11 @@
+# main links links
+main:
+
+  - title: "CVE Collection"
+    url: /cves.html
+
+  - title: "Windows exploitation pathway"
+    url: /windows-exploitation-pathway.html
+
+  - title: "About Me"
+    url: /about.html
