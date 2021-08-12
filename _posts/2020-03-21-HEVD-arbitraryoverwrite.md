@@ -1,6 +1,6 @@
 ---
 layout: single
-title: HEVD - Windows 7 x86 Kernel Arbitrary Write - abusing the HAL for a classic Write-What-Where
+title: HEVD - Windows 7 x86 Kernel Arbitrary Write -  Abusing the HAL for a Classic Write-What-Where
 ---
 
 This post covers the HEVD exploitation of overwriting `HalDispatchTable+0x4` and calling `NtQueryIntervalProfile()` to obtain EOP.
