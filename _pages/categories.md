@@ -9,6 +9,6 @@ permalink: /categories.html
 
 # Malware Analysis
 
-# Vulnerability Research / Exploit Development
+# Exploit Development
 
 # Windows Internals
