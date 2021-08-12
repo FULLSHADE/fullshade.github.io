@@ -1,6 +1,6 @@
 ---
 layout: single
-title: Windows Kernel memory pool & vulnerabilities
+title: Windows Kernel Memory Pool & Vulnerabilities
 ---
 
 This article gives insight into what the Windows Kernel pool is, and what are some vulnerabilities that reside inside the pool area. Also, this article will show and explain the analysis of a Windows pool overflow crash via WinDBG.
