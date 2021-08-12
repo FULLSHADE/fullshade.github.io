@@ -1,6 +1,6 @@
 ---
 layout: single
-title: Fuzzing drivers, techniques of the trade for discovering brand-new 0days
+title: Fuzzing Drivers, Techniques of the Trade for Discovering Brand-New 0days
 ---
 
 This post covers the needed knowledge to discover brand-new 0days throughout the internet, with this information, you will be able to fuzz and write new exploits for third-party drivers. 
