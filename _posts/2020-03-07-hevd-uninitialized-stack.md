@@ -1,6 +1,6 @@
 ---
 layout: single
-title: HEVD - Windows 7 x86 Uninitialized Stack Variable - spraying the stack with pointer values 
+title: HEVD - Windows 7 x86 Uninitialized Stack Variable - Spraying the Stack With Pointer Values
 ---
 
 This post covers the exploitation of the Uninitialized Stack Variable vulnerability class that resides within the HEVD third-party driver application.
