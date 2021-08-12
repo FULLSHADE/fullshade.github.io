@@ -1,6 +1,6 @@
 ---
 layout: single
-title: Kernel Opaque data structures & access tokens
+title: Kernel Opaque Data Structures & Access Tokens
 ---
 
 Within the world of exploit development, a common technique to gain access on another higher level is through the process of process token theft which leads to an escalation of privileges attack (EOP).
