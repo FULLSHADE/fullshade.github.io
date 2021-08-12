@@ -4,8 +4,8 @@ main:
   - title: "CVE Collection"
     url: /cves.html
 
-  - title: "Windows exploitation pathway"
-    url: /windows-exploitation-pathway.html
+  - title: "Projects"
+    url: /projects.html
 
   - title: "About Me"
     url: /about.html
