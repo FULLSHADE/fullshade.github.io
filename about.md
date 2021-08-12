@@ -1,7 +1,7 @@
 ---
 layout: single
 author_profile: true
-title: Post Categories
+title: About
 header:
   overlay_image: blog-cover.jpg
 permalink: /about.html
