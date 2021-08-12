@@ -1,6 +1,6 @@
 ---
 layout: single
-title: Code caving & backdooring Windows PE files - Windows memory manipulation and execution flow hijacking
+title: Code Caving & Backdooring Windows PE Files - Windows Memory Manipulation and Execution Flow Hijacking
 ---
 
 Code caving is a technique deployed by threat actors to run malicious shellcode within the valid PE space of a regular program. It's a technique where an actor discovered a un-used or non-optimized part of code within a compiled program that they can use via hijacking the execution flow to point to this location that has shellcode allocated in it. Which can lead to the application executing a malicious shellcode payload.
