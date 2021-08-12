@@ -1,6 +1,6 @@
 ---
 layout: single
-title: Leaking Kernel Addresses on Windows 10 1607, 1703, and 1809 - undocumented structures to bypass KASLR
+title: Leaking Kernel Addresses on Windows 10 1607, 1703, and 1809 - Undocumented Structures to Bypass KASLR
 ---
 
 Over the years, Microsoft has implemented various security mitigation tactics within the Windows operating system to circumvent and thwart malicious actors from leveraging various types of exploitation techniques to obtain higher levels of privilege than they are supposed to have.
