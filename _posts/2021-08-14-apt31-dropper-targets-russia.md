@@ -21,15 +21,15 @@ Looking at the dropper payload in DIE and other static analysis tools indicates 
 
 On execution, the dropper first checks for the existence of the second stage payload on disk, it check for the legitimate application ssvvagent.exe within C:\ProgramData\Apacha\ssvagent.exe using FindFirstFileA. If the file does not exist it them also checks for the directory that the file would be dropped to at C:\ProgramData\Apacha, if either of these don’t exist, it will create them. If the dropped files don’t exist on disk, the dropper uses CreateFileA and WriteFile to locate and write out the embedded files to their respective locations on disk.
 
-![image](https://user-images.githubusercontent.com/54753063/129459456-47ae82de-4c6f-468b-a2e3-07ef352e6f21.png)
+![image](https://user-images.githubusercontent.com/54753063/129459479-6c0a79e9-f870-461c-9341-46da53999897.png)
 
 If the files do exist on disk the dropper will execute the second stage payload by calling CreateProcessA with the location of the legitimate (dropped) ssvagent.exe file. When this new process is executed it creates a new thread with CreateThread that results in a fake Windows message box popping up stating that there was some kind of installation error. If the new process fails to be created, it calls the TerminateCurrentProcess function which gets the current process and then calls TerminateProcess.
 
-![image](https://user-images.githubusercontent.com/54753063/129459452-02aeccb4-5fb2-47c7-92b9-80a6e1b4396d.png)
+![image](https://user-images.githubusercontent.com/54753063/129459483-77d32760-0018-4488-8c89-8c7dcecf248f.png)
 
 After all is successful, the current process is terminated. 
 
-![image](https://user-images.githubusercontent.com/54753063/129459451-0a09b9bf-c1d3-4c5e-a4a4-e9532a7b5e8e.png)
+![image](https://user-images.githubusercontent.com/54753063/129459486-adbb7d50-1c1d-402a-9c60-ee744438fedf.png)
 
 When WriteFile is called twice, the following “files” are dropped to disk from within the droppers .rdata section. There are two embedded executables (file1 = the legitimate application, file2 = loaded by file1 through DLL-sideloading)
 
