@@ -1,0 +1,53 @@
+---
+title: RagnarLocker Ransomware Malware Analysis Report
+date: 2021-08-02
+---
+
+# Introduction
+
+The Chinese nation state group APT31 also known as ZIRCONIUM, JUDGMENT PANDA, and BRONZE VINEWOOD carried out offensive cyber operations against targets in Russia, Belarus, and others between January and July of 2021. This attack included malware in the form of droppers that lead to the deployment of backdoors. The droppers rely on DLL-sideloading to load the malicious second stage payload. APT31 is a Chinese backed nation state APT group that provides the Chinese government and state-owned enterprises with information to aid in political, economic, and military advantages. The group has a history of targeting government related organizations.  
+Key Findings
+-	The first stage dropper includes two embedded Windows PE files that are written to disk on execution
+-	The two dropped files work together to execute the second stage payload (file2 that is dropped) via DLL-sideloading
+-	The legitimate file (file1) loads and calls the export function _initterm_e from the malicious DLL library (file2)
+-	The second stage payload services the purpose of using the Windows WinInet library to download and execute a third stage payload from an embedded C2 server
+
+# Analysis
+The dropper analyzed in this post includes two embedded files within it’s .rdata section, these two embedded files are dropped to disk using standard Windows API functions such as CreateFileA and WriteFile. Of the two embedded files, one is a legitimate instance of ssvagent.exe which is an update agent for Java, while the other is a malicious second-stage payload that mimics the legitimate MSVCR100.dll library that ssvagent.exe would normally load when executed.
+
+Looking at the dropper payload in DIE and other static analysis tools indicates that the PE is not packed, the PE file is a Microsoft Visual C/C++ compiled binary, compiled for a 32-bit, and was compiled on February 18th, 2021. Based on the original timeline, this payload was compiled and used during the later stages of the offensive operation. The PE file imports four libraries including wtsapi32.dll, kernel32.dll, user32.dll, and shell32.dll. From the function imports there are a few semi-suspicious functions such as WTSGetActiveConsoleSessionId, WTSQueryUserToken, CreateProcessA, GetCurrentProcessId, and ShellExecuteW.
+
+![image](https://user-images.githubusercontent.com/54753063/129459409-4baf859c-875a-468f-bda2-90d990457d6b.png)
+
+On execution, the dropper first checks for the existence of the second stage payload on disk, it check for the legitimate application ssvvagent.exe within C:\ProgramData\Apacha\ssvagent.exe using FindFirstFileA. If the file does not exist it them also checks for the directory that the file would be dropped to at C:\ProgramData\Apacha, if either of these don’t exist, it will create them. If the dropped files don’t exist on disk, the dropper uses CreateFileA and WriteFile to locate and write out the embedded files to their respective locations on disk.
+
+![image](https://user-images.githubusercontent.com/54753063/129459456-47ae82de-4c6f-468b-a2e3-07ef352e6f21.png)
+
+If the files do exist on disk the dropper will execute the second stage payload by calling CreateProcessA with the location of the legitimate (dropped) ssvagent.exe file. When this new process is executed it creates a new thread with CreateThread that results in a fake Windows message box popping up stating that there was some kind of installation error. If the new process fails to be created, it calls the TerminateCurrentProcess function which gets the current process and then calls TerminateProcess.
+
+![image](https://user-images.githubusercontent.com/54753063/129459452-02aeccb4-5fb2-47c7-92b9-80a6e1b4396d.png)
+
+After all is successful, the current process is terminated. 
+
+![image](https://user-images.githubusercontent.com/54753063/129459451-0a09b9bf-c1d3-4c5e-a4a4-e9532a7b5e8e.png)
+
+When WriteFile is called twice, the following “files” are dropped to disk from within the droppers .rdata section. There are two embedded executables (file1 = the legitimate application, file2 = loaded by file1 through DLL-sideloading)
+
+![image](https://user-images.githubusercontent.com/54753063/129459448-4fbec553-d157-430d-bca5-ae0c05a0b4d7.png)
+
+Searching HXD allows you to locate and then dump out the embedded files without needing to execute or debug the dropper.
+
+![image](https://user-images.githubusercontent.com/54753063/129459447-22fa6fa9-7a85-4bfc-8d47-20bd6ff6927c.png)
+
+Located at offset 10FCE is the malicious DLL file that gets dropped to disk
+
+![image](https://user-images.githubusercontent.com/54753063/129459428-884f79ae-38c4-4b76-90a2-0536cde67c54.png)
+
+Located at offset 13DCE is the legitimate application that is responsible for loading the malicious second stage payload through DLL-sideloading.
+
+![image](https://user-images.githubusercontent.com/54753063/129459423-e0fe8894-5704-422b-9d67-8f5e7e51f2f4.png)
+ 
+Debugging the dropped and setting a breakpoint on WriteFile allows you to capture the embedded PE files written to disk.
+
+![image](https://user-images.githubusercontent.com/54753063/129459414-77e546c9-b622-42cb-85d2-5495c6da46cb.png)
+
