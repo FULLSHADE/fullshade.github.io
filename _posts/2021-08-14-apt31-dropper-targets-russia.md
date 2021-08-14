@@ -33,21 +33,21 @@ After all is successful, the current process is terminated.
 
 When WriteFile is called twice, the following “files” are dropped to disk from within the droppers .rdata section. There are two embedded executables (file1 = the legitimate application, file2 = loaded by file1 through DLL-sideloading)
 
-![image](https://user-images.githubusercontent.com/54753063/129459448-4fbec553-d157-430d-bca5-ae0c05a0b4d7.png)
+![image](https://user-images.githubusercontent.com/54753063/129459510-400b7a8d-b6cf-4b56-ba5b-e2f4ad8939e4.png)
 
 Searching HXD allows you to locate and then dump out the embedded files without needing to execute or debug the dropper.
 
-![image](https://user-images.githubusercontent.com/54753063/129459447-22fa6fa9-7a85-4bfc-8d47-20bd6ff6927c.png)
+![image](https://user-images.githubusercontent.com/54753063/129459514-c813c473-1e47-4172-bb7d-bbece28fdecd.png)
 
 Located at offset 10FCE is the malicious DLL file that gets dropped to disk
 
-![image](https://user-images.githubusercontent.com/54753063/129459428-884f79ae-38c4-4b76-90a2-0536cde67c54.png)
+![image](https://user-images.githubusercontent.com/54753063/129459516-fe22ed94-268f-4901-923d-868d2bb88300.png)
 
 Located at offset 13DCE is the legitimate application that is responsible for loading the malicious second stage payload through DLL-sideloading.
 
-![image](https://user-images.githubusercontent.com/54753063/129459423-e0fe8894-5704-422b-9d67-8f5e7e51f2f4.png)
+![image](https://user-images.githubusercontent.com/54753063/129459519-63f2ae49-ff9a-489a-8e81-e2bc5cd122b2.png)
  
 Debugging the dropped and setting a breakpoint on WriteFile allows you to capture the embedded PE files written to disk.
 
-![image](https://user-images.githubusercontent.com/54753063/129459414-77e546c9-b622-42cb-85d2-5495c6da46cb.png)
+![image](https://user-images.githubusercontent.com/54753063/129459520-878902a1-1a47-47d0-b648-12e9ff3439fd.png)
 
