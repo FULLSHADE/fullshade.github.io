@@ -11,7 +11,7 @@ The Chinese nation state group APT31 also known as ZIRCONIUM, JUDGMENT PANDA, an
 -	The two dropped files work together to execute the second stage payload (file2 that is dropped) via DLL-sideloading
 -	The legitimate file (file1) loads and calls the export function _initterm_e from the malicious DLL library (file2)
 -	The second stage payload services the purpose of using the Windows WinInet library to download and execute a third stage payload from an embedded C2 server
--	The droppers payload is responsible for performing the following actions:
+-	The dropped payload that get's loaded through DLL sideloading is responsible for performing the following actions:
     * Maintain persistence on the target system via the Windows Registry
     * Download and write a payload to disk from an embedded C2 Server
 
