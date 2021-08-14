@@ -64,7 +64,13 @@ When setting up malicious DLLs for replacing a legitimate DLL during DLL sideloa
 
 ![image](https://user-images.githubusercontent.com/54753063/129460117-8c1b2e70-784a-4477-930a-cc431619f1a3.png)
 
-Within the `DownloadFromC2Server` function, setting a breakpoint on the first call to InternetCrackUrlA reveals the first parameter `pszUrl` which is equal to the C2 server that the payload will attempt to download a file from.
+Through the first function call made (observed above) the main section of the malicious second stage payload is executed. For a seemingly unknown reasons the payload first decides to enumerate all of the running processes using `CreateToolhelp32Snapshot` with `TH32CS_SNAPPROCES` as the first flags parameter. The payload doesn't seem to store or use the information returned from enumerating the running processes on the system.
+
+Next, the payload checks to see if `ssvagent.dll` exists on disk within the same directory that this second stage payload was dropped to. The file `ssvagent.dll` is the main payload that this stager is responsible for downloading from the C2 server. If the file is found on disk the payload continue to create a new mutex with `CreateMutex` called "ssvagent". After this it checks the last error code against the code for `ERROR_ALREADY_EXISTS` to see if it succeeded, if it doesn't then the process exists with `ExistProcess` Then the process will sleep for 60000 milliseconds before maintaining persistence on the system.
+
+![image](https://user-images.githubusercontent.com/54753063/129462447-627cc754-330d-4fba-bf86-5845c35e71a5.png)
+
+Within the `DownloadFromC2Server` function, setting a breakpoint on the first call to `InternetCrackUrlA` reveals the first parameter `pszUrl` which is equal to the C2 server that the payload will attempt to download a file from.
 
 ![image](https://user-images.githubusercontent.com/54753063/129462046-55be7a6f-eaf4-4cff-a734-23448668c2ef.png)
 
