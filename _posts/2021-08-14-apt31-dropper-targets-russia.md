@@ -51,3 +51,7 @@ Debugging the dropped and setting a breakpoint on WriteFile allows you to captur
 
 ![image](https://user-images.githubusercontent.com/54753063/129459520-878902a1-1a47-47d0-b648-12e9ff3439fd.png)
 
+# Resources
+
+- https://www.ptsecurity.com/ww-en/analytics/pt-esc-threat-intelligence/apt31-new-attacks/
+- https://therecord.media/finland-pins-parliament-hack-on-chinese-hacking-group-apt31/
