@@ -74,6 +74,11 @@ Within the `DownloadFromC2Server` function, setting a breakpoint on the first ca
 
 ![image](https://user-images.githubusercontent.com/54753063/129462046-55be7a6f-eaf4-4cff-a734-23448668c2ef.png)
 
+![image](https://user-images.githubusercontent.com/54753063/129462699-a38c41ca-7129-47d4-9997-f5269f2a78ff.png)
+
+![image](https://user-images.githubusercontent.com/54753063/129462690-a825d4ce-5b1b-439f-9684-02d2c011196c.png)
+
+![image](https://user-images.githubusercontent.com/54753063/129462685-8e594c57-fa90-40ab-8246-28eac8f26725.png)
 
 # Resources
 
