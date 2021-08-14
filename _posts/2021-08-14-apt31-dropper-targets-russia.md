@@ -51,6 +51,15 @@ Debugging the dropped and setting a breakpoint on WriteFile allows you to captur
 
 ![image](https://user-images.githubusercontent.com/54753063/129459520-878902a1-1a47-47d0-b648-12e9ff3439fd.png)
 
+Inspecting the application ssvagent.exe that was dropped to disk reveals that within its function imports, it request the _initterm_a function from within msvcr100.dll. In this case msvcr100.dll was replaced with a malicious second stage payload. But this gives us the first clue on how to locate the main malicious section of code within msvcr.dll that was dropped along with ssvagent.exe from the dropper payload.
+
+![image](https://user-images.githubusercontent.com/54753063/129460102-05384664-8c0f-4abd-8609-01f38f2d561b.png)
+
+When setting up malicious DLLs for replacing a legitimate DLL during DLL sideloading you want to set up the proper export functions so the main application that loads it can execute your malicious code. Typically you will see a malicious DLL that includes all of the same export names that the legitimate version would have, but instead of containing the legitimate code in those functions, it replacing the code with calls to ExitProcess or similar. In this case the exported function that get's executed first calls what ends up being the malicious payload and then there is a call to ExitProcess.
+
+![image](https://user-images.githubusercontent.com/54753063/129460117-8c1b2e70-784a-4477-930a-cc431619f1a3.png)
+
+
 # Resources
 
 - https://www.ptsecurity.com/ww-en/analytics/pt-esc-threat-intelligence/apt31-new-attacks/
