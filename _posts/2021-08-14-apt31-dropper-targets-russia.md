@@ -11,6 +11,9 @@ The Chinese nation state group APT31 also known as ZIRCONIUM, JUDGMENT PANDA, an
 -	The two dropped files work together to execute the second stage payload (file2 that is dropped) via DLL-sideloading
 -	The legitimate file (file1) loads and calls the export function _initterm_e from the malicious DLL library (file2)
 -	The second stage payload services the purpose of using the Windows WinInet library to download and execute a third stage payload from an embedded C2 server
+-	The droppers payload is responsible for performing the following actions:
+  * Maintain persistence on the target system via the Windows Registry
+  * Download and write a payload to disk from an embedded C2 Server
 
 # Analysis
 The dropper analyzed in this post includes two embedded files within it’s .rdata section, these two embedded files are dropped to disk using standard Windows API functions such as CreateFileA and WriteFile. Of the two embedded files, one is a legitimate instance of ssvagent.exe which is an update agent for Java, while the other is a malicious second-stage payload that mimics the legitimate MSVCR100.dll library that ssvagent.exe would normally load when executed.
