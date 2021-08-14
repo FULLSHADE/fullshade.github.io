@@ -4,7 +4,9 @@ date: 2021-08-14
 ---
 
 The Chinese nation state group APT31 also known as ZIRCONIUM, JUDGMENT PANDA, and BRONZE VINEWOOD carried out offensive cyber operations against targets in Russia, Belarus, and others between January and July of 2021. This attack included malware in the form of droppers that lead to the deployment of backdoors. The droppers rely on DLL-sideloading to load the malicious second stage payload. APT31 is a Chinese backed nation state APT group that provides the Chinese government and state-owned enterprises with information to aid in political, economic, and military advantages. The group has a history of targeting government related organizations.  
-Key Findings
+
+# Key Findings
+
 -	The first stage dropper includes two embedded Windows PE files that are written to disk on execution
 -	The two dropped files work together to execute the second stage payload (file2 that is dropped) via DLL-sideloading
 -	The legitimate file (file1) loads and calls the export function _initterm_e from the malicious DLL library (file2)
