@@ -14,6 +14,10 @@ permalink: /categories.html
 - [AgentTesla InfoStealer Malware Analysis Report](https://fullpwnops.com/malware/analysis/agent-tesla-malware-analysis/)
 - [Cerber Ransomware Malware Analysis Report](https://fullpwnops.com/malware/analysis/Cerber-ransomware-malware-analysis/)
 
+# Malware Development
+
+- [Post Exploitation: Loading Kernel Drivers With NtLoadDriver](https://fullpwnops.com/NtLoadDriver/)
+
 # Exploit Development
 
 # Windows Internals
