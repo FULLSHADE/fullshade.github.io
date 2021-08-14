@@ -58,9 +58,15 @@ Inspecting the application ssvagent.exe that was dropped to disk reveals that wi
 
 ![image](https://user-images.githubusercontent.com/54753063/129460102-05384664-8c0f-4abd-8609-01f38f2d561b.png)
 
+# Second Stage Payload
+
 When setting up malicious DLLs for replacing a legitimate DLL during DLL sideloading you want to set up the proper export functions so the main application that loads it can execute your malicious code. Typically you will see a malicious DLL that includes all of the same export names that the legitimate version would have, but instead of containing the legitimate code in those functions, it replacing the code with calls to ExitProcess or similar. In this case the exported function that get's executed first calls what ends up being the malicious payload and then there is a call to ExitProcess.
 
 ![image](https://user-images.githubusercontent.com/54753063/129460117-8c1b2e70-784a-4477-930a-cc431619f1a3.png)
+
+Within the `DownloadFromC2Server` function, setting a breakpoint on the first call to InternetCrackUrlA reveals the first parameter `pszUrl` which is equal to the C2 server that the payload will attempt to download a file from.
+
+![image](https://user-images.githubusercontent.com/54753063/129462046-55be7a6f-eaf4-4cff-a734-23448668c2ef.png)
 
 
 # Resources
