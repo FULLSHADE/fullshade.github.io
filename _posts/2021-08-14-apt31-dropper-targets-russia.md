@@ -1,5 +1,5 @@
 ---
-title: APT31 Droppers Targeting Russian Government Analysis
+title: APT31 Droppers Targeting Russian Government Malware Analysis
 date: 2021-08-14
 ---
 
