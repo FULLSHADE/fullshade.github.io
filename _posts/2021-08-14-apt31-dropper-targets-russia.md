@@ -20,7 +20,7 @@ The dropper analyzed in this post includes two embedded files within it’s .rda
 
 Looking at the dropper payload in DIE and other static analysis tools indicates that the PE is not packed, the PE file is a Microsoft Visual C/C++ compiled binary, compiled for 32-bit, and was compiled on February 18th, 2021. Based on the original timeline, this payload was compiled and used during the later stages of the offensive operation. The PE file imports four libraries including wtsapi32.dll, kernel32.dll, user32.dll, and shell32.dll. From the function imports there are a few semi-suspicious functions such as WTSGetActiveConsoleSessionId, WTSQueryUserToken, CreateProcessA, GetCurrentProcessId, and ShellExecuteW.
 
-![image](https://user-images.githubusercontent.com/54753063/129459474-68edd396-6a8d-4c90-9c4f-dbedbe2131b6.png)
+![image](https://user-images.githubusercontent.com/54753063/129491005-7bb40bee-7d51-49c5-9571-9e69e0a6ccd5.png)
 
 On execution, the dropper first checks for the existence of the second stage payload on disk, it check for the legitimate application ssvvagent.exe within `C:\ProgramData\Apacha\ssvagent.exe` using FindFirstFileA. If the file does not exist it them also checks for the directory that the file would be dropped to at `C:\ProgramData\Apacha`, if either of these don’t exist, it will create them. If the dropped files don’t exist on disk, the dropper uses CreateFileA and WriteFile to locate and write out the embedded files to their respective locations on disk.
 
