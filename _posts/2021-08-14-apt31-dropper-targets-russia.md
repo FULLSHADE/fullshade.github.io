@@ -36,7 +36,7 @@ After all is successful, the current process is terminated.
 
 When WriteFile is called twice, the following “files” are dropped to disk from within the droppers .rdata section. There are two embedded executables (file1 = the legitimate application, file2 = loaded by file1 through DLL-sideloading)
 
-![image](https://user-images.githubusercontent.com/54753063/129459510-400b7a8d-b6cf-4b56-ba5b-e2f4ad8939e4.png)
+![image](https://user-images.githubusercontent.com/54753063/129490831-ff821dec-37bb-4ab0-b58a-45680a3cb3e7.png)
 
 Searching HXD allows you to locate and then dump out the embedded files without needing to execute or debug the dropper.
 
