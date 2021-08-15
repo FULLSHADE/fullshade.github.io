@@ -22,7 +22,7 @@ Looking at the dropper payload in DIE and other static analysis tools indicates 
 
 ![image](https://user-images.githubusercontent.com/54753063/129459474-68edd396-6a8d-4c90-9c4f-dbedbe2131b6.png)
 
-On execution, the dropper first checks for the existence of the second stage payload on disk, it check for the legitimate application ssvvagent.exe within C:\ProgramData\Apacha\ssvagent.exe using FindFirstFileA. If the file does not exist it them also checks for the directory that the file would be dropped to at C:\ProgramData\Apacha, if either of these don’t exist, it will create them. If the dropped files don’t exist on disk, the dropper uses CreateFileA and WriteFile to locate and write out the embedded files to their respective locations on disk.
+On execution, the dropper first checks for the existence of the second stage payload on disk, it check for the legitimate application ssvvagent.exe within `C:\ProgramData\Apacha\ssvagent.exe` using FindFirstFileA. If the file does not exist it them also checks for the directory that the file would be dropped to at `C:\ProgramData\Apacha`, if either of these don’t exist, it will create them. If the dropped files don’t exist on disk, the dropper uses CreateFileA and WriteFile to locate and write out the embedded files to their respective locations on disk.
 
 ![image](https://user-images.githubusercontent.com/54753063/129459479-6c0a79e9-f870-461c-9341-46da53999897.png)
 
