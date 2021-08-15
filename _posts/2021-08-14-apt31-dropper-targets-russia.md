@@ -72,6 +72,10 @@ Next, the payload checks to see if `ssvagent.dll` exists on disk within the same
 
 ![image](https://user-images.githubusercontent.com/54753063/129462447-627cc754-330d-4fba-bf86-5845c35e71a5.png)
 
+Before downloading and executing the final stage backdoor, this stager attempts to maintain persistence on the victims system via the Registry Run keys. It performs this through the usage of the Windows API functions `RegOpenKeyExA`, `RegGetValueA`, and `RegSetValueExA` to check to see if the persistence value is already set, if not it then sets the value of `ssvagent` to execute the `C:\\ProgramData\\Apacha\\ssvagent.exe` same parent process that was originally executed to load this stage of the dropper.
+
+![image](https://user-images.githubusercontent.com/54753063/129488070-f5082897-a707-414e-8b86-42a1f33114a7.png)
+
 Within the `DownloadFromC2Server` function, setting a breakpoint on the first call to `InternetCrackUrlA` reveals the first parameter `pszUrl` which is equal to the C2 server that the payload will attempt to download a file from. When reaching out to the C2 server, the URL is encoded within the binary via XOR.
 
 ![image](https://user-images.githubusercontent.com/54753063/129462046-55be7a6f-eaf4-4cff-a734-23448668c2ef.png)
