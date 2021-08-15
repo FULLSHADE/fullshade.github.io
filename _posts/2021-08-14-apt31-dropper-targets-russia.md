@@ -26,7 +26,7 @@ On execution, the dropper first checks for the existence of the second stage pay
 
 ![image](https://user-images.githubusercontent.com/54753063/129459479-6c0a79e9-f870-461c-9341-46da53999897.png)
 
-If the files do exist on disk the dropper will execute the second stage payload by calling CreateProcessA with the location of the legitimate (dropped) ssvagent.exe file. When this new process is executed it creates a new thread with CreateThread that results in a fake Windows message box popping up stating that there was some kind of installation error. If the new process fails to be created, it calls the TerminateCurrentProcess function which gets the current process and then calls TerminateProcess.
+If the files do exist on disk the dropper will execute the second stage payload by calling `CreateProcessA` with the location of the legitimate (dropped) ssvagent.exe file. When this new process is executed it creates a new thread with CreateThread that results in a fake Windows message box popping up stating that there was some kind of installation error. If the new process fails to be created, it calls the `TerminateCurrentProcess` function which gets the current process and then calls `TerminateProcess`.
 
 ![image](https://user-images.githubusercontent.com/54753063/129459483-77d32760-0018-4488-8c89-8c7dcecf248f.png)
 
@@ -42,11 +42,11 @@ Searching HXD allows you to locate and then dump out the embedded files without 
 
 ![image](https://user-images.githubusercontent.com/54753063/129459514-c813c473-1e47-4172-bb7d-bbece28fdecd.png)
 
-Located at offset 10FCE is the malicious DLL file that gets dropped to disk
+Located at offset `10FCE` is the malicious DLL file that gets dropped to disk
 
 ![image](https://user-images.githubusercontent.com/54753063/129459516-fe22ed94-268f-4901-923d-868d2bb88300.png)
 
-Located at offset 13DCE is the legitimate application that is responsible for loading the malicious second stage payload through DLL-sideloading.
+Located at offset `13DCE` is the legitimate application that is responsible for loading the malicious second stage payload through DLL-sideloading.
 
 ![image](https://user-images.githubusercontent.com/54753063/129459519-63f2ae49-ff9a-489a-8e81-e2bc5cd122b2.png)
  
@@ -54,13 +54,13 @@ Debugging the dropped and setting a breakpoint on WriteFile allows you to captur
 
 ![image](https://user-images.githubusercontent.com/54753063/129459520-878902a1-1a47-47d0-b648-12e9ff3439fd.png)
 
-Inspecting the application ssvagent.exe that was dropped to disk reveals that within its function imports, it request the _initterm_a function from within msvcr100.dll. In this case msvcr100.dll was replaced with a malicious second stage payload. But this gives us the first clue on how to locate the main malicious section of code within msvcr.dll that was dropped along with ssvagent.exe from the dropper payload.
+Inspecting the application ssvagent.exe that was dropped to disk reveals that within its function imports, it request the `_initterm_a` function from within msvcr100.dll. In this case msvcr100.dll was replaced with a malicious second stage payload. But this gives us the first clue on how to locate the main malicious section of code within msvcr.dll that was dropped along with ssvagent.exe from the dropper payload.
 
 ![image](https://user-images.githubusercontent.com/54753063/129460102-05384664-8c0f-4abd-8609-01f38f2d561b.png)
 
 # Second Stage Payload
 
-When setting up malicious DLLs for replacing a legitimate DLL during DLL sideloading you want to set up the proper export functions so the main application that loads it can execute your malicious code. Typically you will see a malicious DLL that includes all of the same export names that the legitimate version would have, but instead of containing the legitimate code in those functions, it replacing the code with calls to ExitProcess or similar. In this case the exported function that get's executed first calls what ends up being the malicious payload and then there is a call to ExitProcess.
+When setting up malicious DLLs for replacing a legitimate DLL during DLL sideloading you want to set up the proper export functions so the main application that loads it can execute your malicious code. Typically you will see a malicious DLL that includes all of the same export names that the legitimate version would have, but instead of containing the legitimate code in those functions, it replacing the code with calls to `ExitProcess` or similar. In this case the exported function that get's executed first calls what ends up being the malicious payload and then there is a call to `ExitProcess`.
 
 ![image](https://user-images.githubusercontent.com/54753063/129460117-8c1b2e70-784a-4477-930a-cc431619f1a3.png)
 
