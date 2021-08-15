@@ -60,6 +60,8 @@ Inspecting the application ssvagent.exe that was dropped to disk reveals that wi
 
 # Second Stage Payload
 
+The dropped second stage payload from the original dropper is responsible for downloading the final stage backdoor from an embedded C2 server. When the backdoor payload is downloaded it is again loaded using DLL sideloading using the same running process.
+
 When setting up malicious DLLs for replacing a legitimate DLL during DLL sideloading you want to set up the proper export functions so the main application that loads it can execute your malicious code. Typically you will see a malicious DLL that includes all of the same export names that the legitimate version would have, but instead of containing the legitimate code in those functions, it replacing the code with calls to `ExitProcess` or similar. In this case the exported function that get's executed first calls what ends up being the malicious payload and then there is a call to `ExitProcess`.
 
 ![image](https://user-images.githubusercontent.com/54753063/129460117-8c1b2e70-784a-4477-930a-cc431619f1a3.png)
