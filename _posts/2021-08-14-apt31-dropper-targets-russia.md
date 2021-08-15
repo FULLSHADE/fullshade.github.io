@@ -24,7 +24,7 @@ Looking at the dropper payload in DIE and other static analysis tools indicates 
 
 On execution, the dropper first checks for the existence of the second stage payload on disk, it check for the legitimate application ssvvagent.exe within `C:\ProgramData\Apacha\ssvagent.exe` using FindFirstFileA. If the file does not exist it them also checks for the directory that the file would be dropped to at `C:\ProgramData\Apacha`, if either of these don’t exist, it will create them. If the dropped files don’t exist on disk, the dropper uses CreateFileA and WriteFile to locate and write out the embedded files to their respective locations on disk.
 
-![image](https://user-images.githubusercontent.com/54753063/129459479-6c0a79e9-f870-461c-9341-46da53999897.png)
+![image](https://user-images.githubusercontent.com/54753063/129491069-6457adc8-804d-4564-b7b1-6be44543cad4.png)
 
 If the files do exist on disk the dropper will execute the second stage payload by calling `CreateProcessA` with the location of the legitimate (dropped) ssvagent.exe file. When this new process is executed it creates a new thread with CreateThread that results in a fake Windows message box popping up stating that there was some kind of installation error. If the new process fails to be created, it calls the `TerminateCurrentProcess` function which gets the current process and then calls `TerminateProcess`.
 
@@ -40,15 +40,15 @@ When WriteFile is called twice, the following “files” are dropped to disk fr
 
 Searching HXD allows you to locate and then dump out the embedded files without needing to execute or debug the dropper.
 
-![image](https://user-images.githubusercontent.com/54753063/129459514-c813c473-1e47-4172-bb7d-bbece28fdecd.png)
+![image](https://user-images.githubusercontent.com/54753063/129491101-5fea1892-a475-4ad7-a923-92766ea1269c.png)
 
 Located at offset `10FCE` is the malicious DLL file that gets dropped to disk
 
-![image](https://user-images.githubusercontent.com/54753063/129459516-fe22ed94-268f-4901-923d-868d2bb88300.png)
+![image](https://user-images.githubusercontent.com/54753063/129491132-6c5f50c5-86ad-4626-9921-b73f51bfacc7.png)
 
 Located at offset `13DCE` is the legitimate application that is responsible for loading the malicious second stage payload through DLL-sideloading.
 
-![image](https://user-images.githubusercontent.com/54753063/129459519-63f2ae49-ff9a-489a-8e81-e2bc5cd122b2.png)
+![image](https://user-images.githubusercontent.com/54753063/129491142-9b9fc945-0b80-4f94-adf1-e41ef3da8a1e.png)
  
 Debugging the dropped and setting a breakpoint on WriteFile allows you to capture the embedded PE files written to disk.
 
