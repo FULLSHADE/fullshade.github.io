@@ -74,7 +74,7 @@ Within the `DownloadFromC2Server` function, setting a breakpoint on the first ca
 
 ![image](https://user-images.githubusercontent.com/54753063/129462046-55be7a6f-eaf4-4cff-a734-23448668c2ef.png)
 
-Prior to making an HTTP request to the C2 URL, it's first decoded on execution via XOR, the XOR key is `0x9`, the data reference DAT_10003009 can be followed to via the encoded version of the URL. For decoding, the encoded version of the URL is looped through a basic algorith.
+Prior to making an HTTP request to the C2 URL, it's first decoded on execution via XOR, the XOR key is `0x9`, the data reference DAT_10003009 can be followed to via the encoded version of the URL. For decoding, the encoded version of the URL is looped through a basic algorithm.
 
 ![image](https://user-images.githubusercontent.com/54753063/129462699-a38c41ca-7129-47d4-9997-f5269f2a78ff.png)
 
