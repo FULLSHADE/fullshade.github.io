@@ -70,13 +70,19 @@ Next, the payload checks to see if `ssvagent.dll` exists on disk within the same
 
 ![image](https://user-images.githubusercontent.com/54753063/129462447-627cc754-330d-4fba-bf86-5845c35e71a5.png)
 
-Within the `DownloadFromC2Server` function, setting a breakpoint on the first call to `InternetCrackUrlA` reveals the first parameter `pszUrl` which is equal to the C2 server that the payload will attempt to download a file from.
+Within the `DownloadFromC2Server` function, setting a breakpoint on the first call to `InternetCrackUrlA` reveals the first parameter `pszUrl` which is equal to the C2 server that the payload will attempt to download a file from. When reaching out to the C2 server, the URL is encoded within the binary via XOR.
 
 ![image](https://user-images.githubusercontent.com/54753063/129462046-55be7a6f-eaf4-4cff-a734-23448668c2ef.png)
 
+Prior to making an HTTP request to the C2 URL, it's first decoded on execution via XOR, the XOR key is `0x9`, the data reference DAT_10003009 can be followed to via the encoded version of the URL. For decoding, the encoded version of the URL is looped through a basic algorith.
+
 ![image](https://user-images.githubusercontent.com/54753063/129462699-a38c41ca-7129-47d4-9997-f5269f2a78ff.png)
 
+Following the reference to the URL parameter in the `InternetCrackUrlA` function call shows it's the same location that the XOR decoding routine decodes. 
+
 ![image](https://user-images.githubusercontent.com/54753063/129462690-a825d4ce-5b1b-439f-9684-02d2c011196c.png)
+
+Using the XOR key, we can extract the hex version of the XOR encoded bytes from within the binary and then run it through CyberChef to manually decode the C2 URL as well.
 
 ![image](https://user-images.githubusercontent.com/54753063/129462685-8e594c57-fa90-40ab-8246-28eac8f26725.png)
 
