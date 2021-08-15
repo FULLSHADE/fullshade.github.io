@@ -84,6 +84,10 @@ Prior to making an HTTP request to the C2 URL, it's first decoded on execution v
 
 ![image](https://user-images.githubusercontent.com/54753063/129462699-a38c41ca-7129-47d4-9997-f5269f2a78ff.png)
 
+// HTTP function
+![image](https://user-images.githubusercontent.com/54753063/129488289-0f23649f-d392-4c09-b258-9254cf08fe58.png)
+
+
 Following the reference to the URL parameter in the `InternetCrackUrlA` function call shows it's the same location that the XOR decoding routine decodes. 
 
 ![image](https://user-images.githubusercontent.com/54753063/129462690-a825d4ce-5b1b-439f-9684-02d2c011196c.png)
