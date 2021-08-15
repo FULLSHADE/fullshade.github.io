@@ -92,6 +92,13 @@ Using the XOR key, we can extract the hex version of the XOR encoded bytes from 
 
 ![image](https://user-images.githubusercontent.com/54753063/129462685-8e594c57-fa90-40ab-8246-28eac8f26725.png)
 
+After downloading the final stage backdoor from the decoded C2 URL, the malware executes it through DLL sideloading by using the same parent process in the same way this stager was executed. It downloads the third stage backdoor and writes it to disk under the name `ssvagent.dll` which is another DLL file that `ssvagent.exe` loads when executed. After it's downloaded from the remote URL and written to disk, the call to `CreateProcessW` executes it.
+
+![image](https://user-images.githubusercontent.com/54753063/129488227-09c16c2f-1802-4595-817c-e72ec2edfd9e.png)
+
+![image](https://user-images.githubusercontent.com/54753063/129488261-c79bb11d-4508-4cca-b746-47ac9eae7908.png)
+
+
 # Rules And Indicators
 
 # Resources
