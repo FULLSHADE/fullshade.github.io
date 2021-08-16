@@ -102,7 +102,7 @@ After downloading the final stage backdoor from the decoded C2 URL, the malware 
 
 ![image](https://user-images.githubusercontent.com/54753063/129488261-c79bb11d-4508-4cca-b746-47ac9eae7908.png)
 
-# Other Dropper Variations
+# Other First Stage Dropper Variations
 
 Throughout this offensive campaign, different countries were targeted, and different countries received slightly different variants in droppers. Another example of a dropper that APT31 used made use of embedded resources that when the dropper was executed would drop to disk and then execute the second stage payload. Below is one example of an embedded resource-based dropper.
 
@@ -132,8 +132,9 @@ Debugging the dropper and setting a breakpoint on the \`ShellExecuteW\` function
 
 ![2e5d857884984a299eaf3e3de247f90a](https://user-images.githubusercontent.com/54753063/129641351-7feceeab-a2e5-4e1a-844e-1529f7a05d9c.png)
 
-
 # Rules And Indicators
+
+# MITRE ATT&CK 
 
 # Resources
 
