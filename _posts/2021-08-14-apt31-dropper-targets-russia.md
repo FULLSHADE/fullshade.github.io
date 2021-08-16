@@ -102,6 +102,36 @@ After downloading the final stage backdoor from the decoded C2 URL, the malware 
 
 ![image](https://user-images.githubusercontent.com/54753063/129488261-c79bb11d-4508-4cca-b746-47ac9eae7908.png)
 
+# Other Dropper Variations
+
+Throughout this offensive campaign, different countries were targeted, and different countries received slightly different variants in droppers. Another example of a dropper that APT31 used made use of embedded resources that when the dropper was executed would drop to disk and then execute the second stage payload. Below is one example of an embedded resource-based dropper.
+
+Inspecting the variation 3F5EA95A5076B473CF8218170E820784 in PeStudio reveals that it includes two embedded DLL based resources. When malware accesses resources via the Windows API they are commonly referenced by name, here the resource IDs are 101 and 102. Both resources are detected as 32-bit executable files.
+
+![9313d0d958cf4ad68433554144cdfbdd](https://user-images.githubusercontent.com/54753063/129640969-cc4b2e3a-f379-4bf1-95c7-a2ffb771f426.png)
+
+This dropper variation includes the typical API calls such as `FindResourceW`, `SizeofResource`, and `LoadResource` to access and then eventually write out the embedded resource files to disk with `CreateFileA` and `WriteFile`
+
+There are two function calls within the dropper, one to writes out the legitimate application (Symantec.exe) and another that writes a second DLL file that is not malicious, but is believed to be something required, and without loading it, the legitimate executable might not properly function.
+
+Below is an image of the function responsible for writing the legitimate application to `C:\ProgramData\Symentec\Symantec.exe`, note that the directory it writes out the application to seems to be misspelled (using "a" instead of "a"), it's safe to assume this is done to prevent overwriting a legitimate installation of the real Symantec.exe utility.
+
+![3bb8ad5095c04226a0cc0250a536c464](https://user-images.githubusercontent.com/54753063/129641052-2159bc78-5376-4a55-88cc-34a465474e95.png)
+
+Below is an image of the function that handles dropping the second embedded DLL payload to the same directory as the legitimate application that was previously dropped. Here we can see that the payload is named `jli.dll` which would replace whatever legitimate DLL `Symantec.exe` would normally load. According to an an article from wikidll.com, Jli.dll is a DLL developed by Oracle for providing functionality related to the JAVA platform. This DLL doesn't include anything of interest, from the functions it does export, it just includes calls to ExitProcess.
+
+![image](https://user-images.githubusercontent.com/54753063/129641245-7062d174-2a92-437c-8718-cb78d7cf2c8c.png)
+
+And just like the other dropper variants, first the directory that the embedded files are dropped to are checked for their existence, if they don't exist, the directory is created with a call to `CreateDirectoryA` (on line 24). After performing directory checks, the embedded resources are written to disk (line 29, 30) and then the legitimate application is executed, which leads to the malicious DLL payload being executed.
+
+On line 31 and 32 the malicious second-stage DLL payload is written to disk, unlike the embedded resources, this is writing data (DLL PE file) from the droppers `.data` section.
+
+![4777858a0b744665b140fe3ba26e1f64](https://user-images.githubusercontent.com/54753063/129641421-ad6c14d6-e1b7-4857-a30f-1145027d0688.png)
+
+Debugging the dropper and setting a breakpoint on the \`ShellExecuteW\` function call allows us to retrieve all of the embedded DLL files.
+
+![2e5d857884984a299eaf3e3de247f90a](https://user-images.githubusercontent.com/54753063/129641351-7feceeab-a2e5-4e1a-844e-1529f7a05d9c.png)
+
 
 # Rules And Indicators
 
