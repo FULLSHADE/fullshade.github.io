@@ -130,7 +130,7 @@ On lines 31 and 32, the malicious second-stage DLL payload is written to disk, u
 
 ![4777858a0b744665b140fe3ba26e1f64](https://user-images.githubusercontent.com/54753063/129641421-ad6c14d6-e1b7-4857-a30f-1145027d0688.png)
 
-Debugging the dropper and setting a breakpoint on the \`ShellExecuteW\` function call allows us to retrieve all of the embedded DLL files.
+Debugging the dropper and setting a breakpoint on the `ShellExecuteW` function call allows us to retrieve all of the embedded DLL files.
 
 ![2e5d857884984a299eaf3e3de247f90a](https://user-images.githubusercontent.com/54753063/129641351-7feceeab-a2e5-4e1a-844e-1529f7a05d9c.png)
 
