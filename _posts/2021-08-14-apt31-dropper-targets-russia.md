@@ -138,6 +138,17 @@ Debugging the dropper and setting a breakpoint on the \`ShellExecuteW\` function
 
 # MITRE ATT&CK 
 
+- T1059: Command and Scripting Interpreter
+- T1106: Native API
+- T1574.001: DLL Search Order Hijacking
+- T1546.011: Application Shimming
+- T1497: Virtualization/Sandbox Evasion
+- T1055: Process Injection
+- T1027: Obfuscated Files or Information
+- T1083: File and Directory Discovery
+- T1082: System Information Discovery
+- T1095: Non-Application Layer Protocol
+
 # Resources
 
 - https://www.ptsecurity.com/ww-en/analytics/pt-esc-threat-intelligence/apt31-new-attacks/
