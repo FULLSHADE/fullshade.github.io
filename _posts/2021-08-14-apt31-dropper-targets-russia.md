@@ -134,6 +134,11 @@ Debugging the dropper and setting a breakpoint on the `ShellExecuteW` function c
 
 ![2e5d857884984a299eaf3e3de247f90a](https://user-images.githubusercontent.com/54753063/129641351-7feceeab-a2e5-4e1a-844e-1529f7a05d9c.png)
 
+C2 domain DNS resolution and response
+
+![image](https://user-images.githubusercontent.com/54753063/130006721-86e4b4f5-2c16-4297-aeb4-7b8884a4762c.png)
+
+
 # Rules And Indicators
 
 |**MD5 Hash**|**Description**|**Compilation Timestamp**|**Filename**|
