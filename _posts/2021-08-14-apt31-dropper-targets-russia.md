@@ -139,7 +139,7 @@ Debugging the dropper and setting a breakpoint on the \`ShellExecuteW\` function
 |**MD5 Hash**|**Description**|**Compilation Timestamp**|**Filename**|
 | --- | --- | --- | --- |
 | 626270D5BF16EB2C4DDA2D9F6E0C4EF9 | APT31 initial dropper responsible for dropping and loading embedded executables via DLL- sideloading | 2021-02-19 02:38:24 |     |
-| 98EEC12BB0342A0AB6DBC6CEA436D4AD | APT31 dropper, legitimate file used for DLL-sideloading a second stage dropper | 2017-03-15 08:47:50 | ssvagent.exe |
+| 98EEC12BB0342A0AB6DBC6CEA436D4AD | Legitimate file used for DLL-sideloading a second stage dropper | 2017-03-15 08:47:50 | ssvagent.exe |
 | 8CEFAA146178F5C3A297A7895CD3D1FC | APT31 second stage dropper responsible for downloading and loading the final backdoor | 2021-02-18 06:46:37 | MSVCR100.dll |
 
 # MITRE ATT&CK 
