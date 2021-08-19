@@ -3,7 +3,7 @@ title: Chinese APT31 Droppers Targeting Russian Government Analysis
 date: 2021-08-14
 ---
 
-The Chinese nation state group APT31 also known as ZIRCONIUM, JUDGMENT PANDA, and BRONZE VINEWOOD carried out offensive cyber operations against targets in Russia, Belarus, and others between January and July of 2021. This attack included malware in the form of droppers that lead to the deployment of backdoors. The droppers rely on DLL-sideloading to load the malicious second stage payload. APT31 is a Chinese backed nation state APT group that provides the Chinese government and state-owned enterprises with information to aid in political, economic, and military advantages. The group has a history of targeting government related organizations.  
+The Chinese nation-state group APT31 also known as ZIRCONIUM, JUDGMENT PANDA, and BRONZE VINEWOOD carried out offensive cyber operations against targets in Russia, Belarus, and others between January and July of 2021. This attack included malware in the form of droppers that lead to the deployment of backdoors. The droppers rely on DLL-sideloading to load the malicious second-stage payload. APT31 is a Chinese-backed nation-state APT group that provides the Chinese government and state-owned enterprises with information to aid in political, economic, and military advantages. The group has a history of targeting government-related organizations.  
 
 # Key Findings
 
@@ -16,13 +16,13 @@ The Chinese nation state group APT31 also known as ZIRCONIUM, JUDGMENT PANDA, an
     * Download and write a payload to disk from an embedded C2 Server
 
 # Analysis
-The dropper analyzed in this post includes two embedded files within it’s .rdata section, these two embedded files are dropped to disk using standard Windows API functions such as CreateFileA and WriteFile. Of the two embedded files, one is a legitimate instance of ssvagent.exe which is an update agent for Java, while the other is a malicious second-stage payload that mimics the legitimate MSVCR100.dll library that ssvagent.exe would normally load when executed.
+The dropper analyzed in this post includes two embedded files within its.rdata section, these two embedded files are dropped to disk using standard Windows API functions such as CreateFileA and WriteFile. Of the two embedded files, one is a legitimate instance of ssvagent.exe which is an update agent for Java, while the other is a malicious second-stage payload that mimics the legitimate MSVCR100.dll library that ssvagent.exe would normally load when executed.
 
 Looking at the dropper payload in DIE and other static analysis tools indicates that the PE is not packed, the PE file is a Microsoft Visual C/C++ compiled binary, compiled for 32-bit, and was compiled on February 18th, 2021. Based on the original timeline, this payload was compiled and used during the later stages of the offensive operation. The PE file imports four libraries including wtsapi32.dll, kernel32.dll, user32.dll, and shell32.dll. From the function imports there are a few semi-suspicious functions such as WTSGetActiveConsoleSessionId, WTSQueryUserToken, CreateProcessA, GetCurrentProcessId, and ShellExecuteW.
 
 ![image](https://user-images.githubusercontent.com/54753063/129491005-7bb40bee-7d51-49c5-9571-9e69e0a6ccd5.png)
 
-On execution, the dropper first checks for the existence of the second stage payload on disk, it check for the legitimate application ssvvagent.exe within `C:\ProgramData\Apacha\ssvagent.exe` using FindFirstFileA. If the file does not exist it them also checks for the directory that the file would be dropped to at `C:\ProgramData\Apacha`, if either of these don’t exist, it will create them. If the dropped files don’t exist on disk, the dropper uses CreateFileA and WriteFile to locate and write out the embedded files to their respective locations on disk.
+On execution, the dropper first checks for the existence of the second stage payload on disk, it checks for the legitimate application ssvvagent.exe within `C:\ProgramData\Apacha\ssvagent.exe` using FindFirstFileA. If the file does not exist it also checks for the directory that the file would be dropped to at `C:\ProgramData\Apacha`, if either of these doesn’t exist, it will create them. If the dropped files don’t exist on disk, the dropper uses CreateFileA and WriteFile to locate and write out the embedded files to their respective locations on disk.
 
 ![image](https://user-images.githubusercontent.com/54753063/129491069-6457adc8-804d-4564-b7b1-6be44543cad4.png)
 
@@ -54,25 +54,25 @@ Debugging the dropped and setting a breakpoint on WriteFile allows you to captur
 
 ![image](https://user-images.githubusercontent.com/54753063/129491183-013f7af4-7f99-48fa-a33a-25294b516b42.png)
 
-Inspecting the application ssvagent.exe that was dropped to disk reveals that within its function imports, it request the `_initterm_a` function from within msvcr100.dll. In this case msvcr100.dll was replaced with a malicious second stage payload. But this gives us the first clue on how to locate the main malicious section of code within msvcr.dll that was dropped along with ssvagent.exe from the dropper payload.
+Inspecting the application ssvagent.exe that was dropped to disk reveals that within its function imports, it requests the `_initterm_a` function from within msvcr100.dll. In this case, msvcr100.dll was replaced with a malicious second-stage payload. But this gives us the first clue on how to locate the main malicious section of code within msvcr.dll that was dropped along with ssvagent.exe from the dropper payload.
 
 ![image](https://user-images.githubusercontent.com/54753063/129460102-05384664-8c0f-4abd-8609-01f38f2d561b.png)
 
 # Second Stage Payload
 
-The dropped second stage payload from the original dropper is responsible for downloading the final stage backdoor from an embedded C2 server. When the backdoor payload is downloaded it is again loaded using DLL sideloading using the same running process.
+The dropped second-stage payload from the original dropper is responsible for downloading the final stage backdoor from an embedded C2 server. When the backdoor payload is downloaded it is again loaded using DLL sideloading using the same running process.
 
-When setting up malicious DLLs for replacing a legitimate DLL during DLL sideloading you want to set up the proper export functions so the main application that loads it can execute your malicious code. Typically you will see a malicious DLL that includes all of the same export names that the legitimate version would have, but instead of containing the legitimate code in those functions, it replacing the code with calls to `ExitProcess` or similar. In this case the exported function that get's executed first calls what ends up being the malicious payload and then there is a call to `ExitProcess`.
+When setting up malicious DLLs for replacing a legitimate DLL during DLL sideloading you want to set up the proper export functions so the main application that loads it can execute your malicious code. Typically you will see a malicious DLL that includes all of the same export names that the legitimate version would have, but instead of containing the legitimate code in those functions, it replacing the code with calls to `ExitProcess` or similar. In this case, the exported function that gets executed first calls what ends up being the malicious payload, and then there is a call to `ExitProcess`.
 
 ![image](https://user-images.githubusercontent.com/54753063/129460117-8c1b2e70-784a-4477-930a-cc431619f1a3.png)
 
-Through the first function call made (observed above) the main section of the malicious second stage payload is executed. For a seemingly unknown reasons the payload first decides to enumerate all of the running processes using `CreateToolhelp32Snapshot` with `TH32CS_SNAPPROCES` as the first flags parameter. The payload doesn't seem to store or use the information returned from enumerating the running processes on the system.
+Through the first function call made (observed above) the main section of the malicious second-stage payload is executed. For seemingly unknown reasons the payload first decides to enumerate all of the running processes using `CreateToolhelp32Snapshot` with `TH32CS_SNAPPROCES` as the first flags parameter. The payload doesn't seem to store or use the information returned from enumerating the running processes on the system.
 
-Next, the payload checks to see if `ssvagent.dll` exists on disk within the same directory that this second stage payload was dropped to. The file `ssvagent.dll` is the main payload that this stager is responsible for downloading from the C2 server. If the file is found on disk the payload continue to create a new mutex with `CreateMutex` called "ssvagent". After this it checks the last error code against the code for `ERROR_ALREADY_EXISTS` to see if it succeeded, if it doesn't then the process exists with `ExistProcess` Then the process will sleep for 60000 milliseconds before maintaining persistence on the system.
+Next, the payload checks to see if `ssvagent.dll` exists on disk within the same directory that this second stage payload was dropped to. The file `ssvagent.dll` is the main payload that this stager is responsible for downloading from the C2 server. If the file is found on disk the payload continues to create a new mutex with `CreateMutex` called "ssvagent". After this it checks the last error code against the code for `ERROR_ALREADY_EXISTS` to see if it succeeded, if it doesn't then the process exists with `ExistProcess` Then the process will sleep for 60000 milliseconds before maintaining persistence on the system.
 
 ![image](https://user-images.githubusercontent.com/54753063/129462447-627cc754-330d-4fba-bf86-5845c35e71a5.png)
 
-Before downloading and executing the final stage backdoor, this stager attempts to maintain persistence on the victims system via the Registry Run keys. It performs this through the usage of the Windows API functions `RegOpenKeyExA`, `RegGetValueA`, and `RegSetValueExA` to check to see if the persistence value is already set, if not it then sets the value of `ssvagent` to execute the `C:\\ProgramData\\Apacha\\ssvagent.exe` same parent process that was originally executed to load this stage of the dropper.
+Before downloading and executing the final stage backdoor, this stager attempts to maintain persistence on the victim's system via the Registry Run keys. It performs this through the usage of the Windows API functions `RegOpenKeyExA`, `RegGetValueA`, and `RegSetValueExA` to check to see if the persistence value is already set, if not it then sets the value of `ssvagent` to execute the `C:\\ProgramData\\Apacha\\ssvagent.exe` same parent process that was originally executed to load this stage of the dropper.
 
 ![image](https://user-images.githubusercontent.com/54753063/129488070-f5082897-a707-414e-8b86-42a1f33114a7.png)
 
@@ -80,7 +80,7 @@ Within the `DownloadFromC2Server` function, setting a breakpoint on the first ca
 
 ![image](https://user-images.githubusercontent.com/54753063/129462046-55be7a6f-eaf4-4cff-a734-23448668c2ef.png)
 
-Prior to making an HTTP request to the C2 URL, it's first decoded on execution via XOR, the XOR key is `0x9`, the data reference DAT_10003009 can be followed to via the encoded version of the URL. For decoding, the encoded version of the URL is looped through a basic algorithm.
+Prior to making an HTTP request to the C2 URL, it's first decoded on execution via XOR, the XOR key is `0x9`, the data reference DAT_10003009 can be followed via the encoded version of the URL. For decoding, the encoded version of the URL is looped through a basic algorithm.
 
 ![image](https://user-images.githubusercontent.com/54753063/129462699-a38c41ca-7129-47d4-9997-f5269f2a78ff.png)
 
@@ -104,7 +104,7 @@ After downloading the final stage backdoor from the decoded C2 URL, the malware 
 
 # Other First Stage Dropper Variations
 
-Throughout this offensive campaign, different countries were targeted, and different countries received slightly different variants in droppers. Another example of a dropper that APT31 used made use of embedded resources that when the dropper was executed would drop to disk and then execute the second stage payload. Below is one example of an embedded resource-based dropper.
+Throughout this offensive campaign, different countries were targeted, and different countries received slightly different variants in droppers. Another example of a dropper that APT31 used made use of embedded resources that when the dropper was executed would drop to disk and then execute the second-stage payload. Below is one example of an embedded resource-based dropper.
 
 Inspecting the variation 3F5EA95A5076B473CF8218170E820784 in PeStudio reveals that it includes two embedded DLL based resources. When malware accesses resources via the Windows API they are commonly referenced by name, here the resource IDs are 101 and 102. Both resources are detected as 32-bit executable files.
 
@@ -118,13 +118,13 @@ Below is an image of the function responsible for writing the legitimate applica
 
 ![3bb8ad5095c04226a0cc0250a536c464](https://user-images.githubusercontent.com/54753063/129641052-2159bc78-5376-4a55-88cc-34a465474e95.png)
 
-Below is an image of the function that handles dropping the second embedded DLL payload to the same directory as the legitimate application that was previously dropped. Here we can see that the payload is named `jli.dll` which would replace whatever legitimate DLL `Symantec.exe` would normally load. According to an an article from wikidll.com, Jli.dll is a DLL developed by Oracle for providing functionality related to the JAVA platform. This DLL doesn't include anything of interest, from the functions it does export, it just includes calls to ExitProcess.
+Below is an image of the function that handles dropping the second embedded DLL payload to the same directory as the legitimate application that was previously dropped. Here we can see that the payload is named `jli.dll` which would replace whatever legitimate DLL `Symantec.exe` would normally load. According to an article from wikidll.com, Jli.dll is a DLL developed by Oracle for providing functionality related to the JAVA platform. This DLL doesn't include anything of interest, from the functions it does export, it just includes calls to ExitProcess.
 
 ![image](https://user-images.githubusercontent.com/54753063/129641245-7062d174-2a92-437c-8718-cb78d7cf2c8c.png)
 
-And just like the other dropper variants, first the directory that the embedded files are dropped to are checked for their existence, if they don't exist, the directory is created with a call to `CreateDirectoryA` (on line 24). After performing directory checks, the embedded resources are written to disk (line 29, 30) and then the legitimate application is executed, which leads to the malicious DLL payload being executed.
+And just like the other dropper variants, first, the directory that the embedded files are dropped to are checked for their existence, if they don't exist, the directory is created with a call to `CreateDirectoryA` (on line 24). After performing directory checks, the embedded resources are written to disk (line 29, 30), and then the legitimate application is executed, which leads to the malicious DLL payload being executed.
 
-On line 31 and 32 the malicious second-stage DLL payload is written to disk, unlike the embedded resources, this is writing data (DLL PE file) from the droppers `.data` section.
+On lines 31 and 32, the malicious second-stage DLL payload is written to disk, unlike the embedded resources, which is writing data (DLL PE file) from the droppers `.data` section.
 
 ![4777858a0b744665b140fe3ba26e1f64](https://user-images.githubusercontent.com/54753063/129641421-ad6c14d6-e1b7-4857-a30f-1145027d0688.png)
 
