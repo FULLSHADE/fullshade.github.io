@@ -136,6 +136,7 @@ Debugging the dropper and setting a breakpoint on the \`ShellExecuteW\` function
 
 # Rules And Indicators
 
+|     |     |     |     |
 | --- | --- | --- | --- |
 | **MD5 Hash** | **Description** | **Compilation Timestamp** | **Filename** |
 | 626270D5BF16EB2C4DDA2D9F6E0C4EF9 | APT31 initial dropper responsible for dropping and loading embedded executables via DLL- sideloading | 2021-02-19 02:38:24 |     |
