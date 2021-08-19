@@ -1,5 +1,5 @@
 ---
-title: Chinese APT31 Droppers Targeting Russian Government Analysis
+title: Chinese APT31 Droppers Targeting Government Organizations Analysis
 date: 2021-08-14
 ---
 
@@ -155,7 +155,7 @@ Debugging the dropper and setting a breakpoint on the \`ShellExecuteW\` function
 - T1082: System Information Discovery
 - T1095: Non-Application Layer Protocol
 
-# Resources
+# References
 
 - https://www.ptsecurity.com/ww-en/analytics/pt-esc-threat-intelligence/apt31-new-attacks/
 - https://therecord.media/finland-pins-parliament-hack-on-chinese-hacking-group-apt31/
