@@ -84,9 +84,13 @@ Prior to making an HTTP request to the C2 URL, it's first decoded on execution v
 
 ![image](https://user-images.githubusercontent.com/54753063/129462699-a38c41ca-7129-47d4-9997-f5269f2a78ff.png)
 
-For outbound C2 requests the payload makes use of standard WinInet API functions such as `HttpOpenRequestA` and `HttpSendRequestA`, the `DownloadFromC2Server` function issues an HTTP GET request to the XOR decoded URL, within the HTTP response is another payload that is processed via the call to `InternetReadFile` on line 123, the file returned in the HTTP response is written to disk via the call to `CreateFileA` and `WriteFile`. On-disk the downloaded payload is eventually loaded into the running process by calling `CreateProcessW`, on disk `ssvagent.exe` will load `ssvagent.dll` at runtime again through DLL side-loading.
+For outbound C2 requests the payload makes use of standard WinInet API functions such as `HttpOpenRequestA` and `HttpSendRequestA`, the `DownloadFromC2Server` function issues an HTTP GET request to the XOR decoded URL, within the HTTP response is another payload that is processed via the call to `InternetReadFile` on line 123, the file returned in the HTTP response is written to disk via the call to `CreateFileA` and `WriteFile`. 
 
 ![image](https://user-images.githubusercontent.com/54753063/129488289-0f23649f-d392-4c09-b258-9254cf08fe58.png)
+
+On-disk the downloaded payload is eventually loaded into the running process by calling `CreateProcessW`, on disk `ssvagent.exe` will load `ssvagent.dll` at runtime again through DLL side-loading.
+
+![image](https://user-images.githubusercontent.com/54753063/129488261-c79bb11d-4508-4cca-b746-47ac9eae7908.png)
 
 Following the reference to the URL parameter in the `InternetCrackUrlA` function call shows it's the same location that the XOR decoding routine decodes. 
 
@@ -99,8 +103,6 @@ Using the XOR key, we can extract the hex version of the XOR encoded bytes from 
 After downloading the final stage backdoor from the decoded C2 URL, the malware executes it through DLL sideloading by using the same parent process in the same way this stager was executed. It downloads the third stage backdoor and writes it to disk under the name `ssvagent.dll` which is another DLL file that `ssvagent.exe` loads when executed. After it's downloaded from the remote URL and written to disk, the call to `CreateProcessW` executes it.
 
 ![image](https://user-images.githubusercontent.com/54753063/129488227-09c16c2f-1802-4595-817c-e72ec2edfd9e.png)
-
-![image](https://user-images.githubusercontent.com/54753063/129488261-c79bb11d-4508-4cca-b746-47ac9eae7908.png)
 
 # Other First Stage Dropper Variations
 
