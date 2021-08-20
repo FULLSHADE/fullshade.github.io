@@ -186,3 +186,4 @@ rule apt31_dropper_first_stage
 
 - https://www.ptsecurity.com/ww-en/analytics/pt-esc-threat-intelligence/apt31-new-attacks/
 - https://therecord.media/finland-pins-parliament-hack-on-chinese-hacking-group-apt31/
+- https://attack.mitre.org/techniques/T1574/002/
