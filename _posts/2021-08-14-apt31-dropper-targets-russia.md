@@ -138,7 +138,6 @@ C2 domain DNS resolution and response
 
 ![image](https://user-images.githubusercontent.com/54753063/130006721-86e4b4f5-2c16-4297-aeb4-7b8884a4762c.png)
 
-
 # Rules And Indicators
 
 |**MD5 Hash**|**Description**|**Compilation Timestamp**|**Filename**|
@@ -146,6 +145,27 @@ C2 domain DNS resolution and response
 | 626270D5BF16EB2C4DDA2D9F6E0C4EF9 | APT31 initial dropper responsible for dropping and loading embedded executables via DLL- sideloading | 2021-02-19 02:38:24 |     |
 | 98EEC12BB0342A0AB6DBC6CEA436D4AD | Legitimate file used for DLL-sideloading a second stage dropper | 2017-03-15 08:47:50 | ssvagent.exe |
 | 8CEFAA146178F5C3A297A7895CD3D1FC | APT31 second stage dropper responsible for downloading and loading the final backdoor | 2021-02-18 06:46:37 | MSVCR100.dll |
+
+```
+import "pe"
+
+rule apt31_dropper_first_stage
+{
+	meta:
+		date = "8/15/2021"
+		hash = "626270D5BF16EB2C4DDA2D9F6E0C4EF9"
+		description = "APT31 intial dropper responsible for droppering and loading embedded executables via DLL sideloading"
+	strings:
+		$str1 = "C:\\ProgramData\\Apacha" fullword ascii
+		$str2 = "C:\\ProgramData\\Apacha\\ssvagent.exe" fullword ascii
+		$str3 =	"C:\\ProgramData\\Apacha\\MSVCR100.dll" fullword ascii
+	condition:
+		all of them and ( uint16(0) == 0x5a4d and filesize < 300KB )
+		and uint16(0x10F80) == 0x5a4d and uint16(0x13D80) == 0x5a4d
+		and pe.imports("kernel32.dll","CreateProcessA")
+		and pe.imports("kernel32.dll","WTSGetActiveConsoleSessionId")
+}
+```
 
 # MITRE ATT&CK 
 
