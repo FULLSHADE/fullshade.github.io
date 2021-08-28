@@ -7,18 +7,18 @@ The Chinese nation-state group APT31 also known as ZIRCONIUM, JUDGMENT PANDA, an
 
 # Key Findings
 
--	The first stage dropper includes two embedded Windows PE files that are written to disk on execution
--	The two dropped files work together to execute the second stage payload (file2 that is dropped) via DLL-sideloading
--	The legitimate file (file1) loads and calls the export function _initterm_e from the malicious DLL library (file2)
--	The second stage payload services the purpose of using the Windows WinInet library to download and execute a third stage payload from an embedded C2 server
--	The dropped payload that get's loaded through DLL sideloading is responsible for performing the following actions:
+- The first stage dropper includes two embedded Windows PE files that are written to disk on execution
+- The two dropped files work together to execute the second stage payload (file2 that is dropped) via DLL-sideloading
+- The legitimate file (file1) loads and calls the export function _initterm_e from the malicious DLL library (file2)
+- The second stage payload services the purpose of using the Windows WinInet library to download and execute a third stage payload from an embedded C2 server
+- The dropped payload that get's loaded through DLL sideloading is responsible for performing the following actions:
     * Maintain persistence on the target system via the Windows Registry
     * Download and write a payload to disk from an embedded C2 Server
 
 # Analysis
-The dropper analyzed in this post includes two embedded files within its.rdata section, these two embedded files are dropped to disk using standard Windows API functions such as CreateFileA and WriteFile. Of the two embedded files, one is a legitimate instance of ssvagent.exe which is an update agent for Java, while the other is a malicious second-stage payload that mimics the legitimate MSVCR100.dll library that ssvagent.exe would normally load when executed.
+The dropper analyzed in this post includes two embedded files within its.rdata section, these two embedded files are dropped to disk using standard Windows API functions such as CreateFileA and WriteFile. Of the two embedded files, one is a legitimate instance of `ssvagent.exe` which is an update agent for Java,  the other is a malicious second-stage payload that mimics the legitimate MSVCR100.dll library that ssvagent.exe would normally load.
 
-Looking at the dropper payload in DIE and other static analysis tools indicates that the PE is not packed, the PE file is a Microsoft Visual C/C++ compiled binary, compiled for 32-bit, and was compiled on February 18th, 2021. Based on the original timeline, this payload was compiled and used during the later stages of the offensive operation. The PE file imports four libraries including wtsapi32.dll, kernel32.dll, user32.dll, and shell32.dll. From the function imports there are a few semi-suspicious functions such as WTSGetActiveConsoleSessionId, WTSQueryUserToken, CreateProcessA, GetCurrentProcessId, and ShellExecuteW.
+Looking at the dropper payload in DIE indicates that the PE is not packed, the PE file is a Microsoft Visual C/C++ compiled binary, compiled for 32-bit, and was compiled on February 18th, 2021. Based on the original timeline, this payload was compiled and used during the later stages of the offensive operation. The PE file imports four libraries including `wtsapi32.dll`, `kernel32.dll`, `user32.dll`, and `shell32.dll`. From the function imports there are a few semi-suspicious functions such as `WTSGetActiveConsoleSessionId`, `WTSQueryUserToken`, `CreateProcessA`, `GetCurrentProcessId`, and `ShellExecuteW`.
 
 ![image](https://user-images.githubusercontent.com/54753063/129491005-7bb40bee-7d51-49c5-9571-9e69e0a6ccd5.png)
 
