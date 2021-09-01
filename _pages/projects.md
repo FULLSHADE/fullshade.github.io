@@ -16,8 +16,8 @@ Jektor is a shellcode injection/execution tool that demonstrates various techniq
 - Link: [https://github.com/FULLSHADE/Jektor](https://github.com/FULLSHADE/Jektor)
 
 
-## HonestGuard
-HonestGuard is a proof-of-concept infostealer designed to gather system information about a target system and exfiltrate it back to a C2 server in an encrypted manner
+## RedPulsar
+RedPulsar is a Windows implant written in C/C++ designed to aid in post-exploitation activity. RedPulsar offers a diverse set of features that enable the user complete control over the target system. RedPulsar focuses on anti-analysis and making static code analysis and anti-virus detection more difficult.
 - Link: https://github.com/xxxxxxxxxx/HonestGuard
 
 
