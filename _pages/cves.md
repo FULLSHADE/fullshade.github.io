@@ -45,7 +45,7 @@ You can find my personal disclosure policy on the bottom of this page.
 
 ### Vendor Vulnerability Reporting and Disclosure Policy
 
-This policy sets for the reporting and disclosure policy that FullPwn Operations follows when handling a disclosure case with a vendor. If a vulnerability is discovered within a vendor product, the vendor will be contacted via email with details and a security report about the details of the vulnerability and the proper mitigation strategy that the vendor may take to patch the application.
+This policy sets for the reporting and disclosure policy that is followed when handling a disclosure case with a vendor. If a vulnerability is discovered within a vendor product, the vendor will be contacted via email with details and a security report about the details of the vulnerability and the proper mitigation strategy that the vendor may take to patch the application.
 
 This vulnerability disclosure policy is similar to the [CERT](https://vuls.cert.org/confluence/display/Wiki/Vulnerability+Disclosure+Policy) disclosure policy of 45 days.
 
